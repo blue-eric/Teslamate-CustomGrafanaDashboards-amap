@@ -81,7 +81,7 @@ If you want to be sure that you are using the latest version of the Dashboards:
 - Pull again from the repository
 
 ```bash
-git -C ~/Teslamate-CustomGrafanaDashboards pull
+git -C ~/Teslamate-CustomGrafanaDashboards-amap pull
 ```
 
 - Then **restart** Grafana container
@@ -313,6 +313,7 @@ Licensed under the [MIT license][license-url].
 [discussions-url]: https://github.com/jheredianet/Teslamate-CustomGrafanaDashboards/discussions
 [license-shield]: https://img.shields.io/github/license/jheredianet/Teslamate-CustomGrafanaDashboards.svg?style=for-the-badge
 [license-url]: ./LICENSE
+
 
 
 
