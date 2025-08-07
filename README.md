@@ -36,7 +36,7 @@ In order to auto-import all the dashboard files from this repository, considerin
 - The following command will clone the source files from this repository. This should be run in an appropriate directory within which you would like to keep it. You should also record this path and provide it later in the following steps. To keep it easy, you may run this your home path (~/) or modify it accordingly.
 
 ```bash
-git clone https://github.com/jheredianet/Teslamate-CustomGrafanaDashboards.git
+git clone -b v2025.7.11-amap https://github.com/blue-eric/Teslamate-CustomGrafanaDashboards-amap.git
 ```
 
 - Edit your Teslamate "docker-compose.yml" file and add these two new lines at the end of the "volumes" section of the grafana container
@@ -313,4 +313,5 @@ Licensed under the [MIT license][license-url].
 [discussions-url]: https://github.com/jheredianet/Teslamate-CustomGrafanaDashboards/discussions
 [license-shield]: https://img.shields.io/github/license/jheredianet/Teslamate-CustomGrafanaDashboards.svg?style=for-the-badge
 [license-url]: ./LICENSE
+
 
