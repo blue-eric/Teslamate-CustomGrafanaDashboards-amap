@@ -1,3 +1,5 @@
+# 首先感谢作者开发这么好的仪表板，然后我根据hipudding大神的思路，把仪表板改为了高德地图，这样在中国使用更方便。
+
 # TeslaMate Custom Grafana Dashboards
 
 ### Last release: [v2025.7.11](https://github.com/jheredianet/Teslamate-CustomGrafanaDashboards/releases/)
@@ -311,3 +313,4 @@ Licensed under the [MIT license][license-url].
 [discussions-url]: https://github.com/jheredianet/Teslamate-CustomGrafanaDashboards/discussions
 [license-shield]: https://img.shields.io/github/license/jheredianet/Teslamate-CustomGrafanaDashboards.svg?style=for-the-badge
 [license-url]: ./LICENSE
+
