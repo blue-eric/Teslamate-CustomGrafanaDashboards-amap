@@ -50,8 +50,8 @@ services:
     ...
     volumes:
       - teslamate-grafana-data:/var/lib/grafana
-      - ~/Teslamate-CustomGrafanaDashboards/customdashboards.yml:/etc/grafana/provisioning/dashboards/customdashboards.yml
-      - ~/Teslamate-CustomGrafanaDashboards/dashboards:/TeslamateCustomDashboards
+      - ~/Teslamate-CustomGrafanaDashboards-amap/customdashboards.yml:/etc/grafana/provisioning/dashboards/customdashboards.yml
+      - ~/Teslamate-CustomGrafanaDashboards-amap/dashboards:/TeslamateCustomDashboards
 ```
 
 - Save your file and then **recreate** Grafana container (docker-compose up -d)
@@ -70,8 +70,8 @@ services:
     ...
     volumes:
       - teslamate-grafana-data:/var/lib/grafana
-      - /some/path/Teslamate-CustomGrafanaDashboards/customdashboards.yml:/etc/grafana/provisioning/dashboards/customdashboards.yml
-      - /some/path/Teslamate-CustomGrafanaDashboards/dashboards:/TeslamateCustomDashboards
+      - /some/path/Teslamate-CustomGrafanaDashboards-amap/customdashboards.yml:/etc/grafana/provisioning/dashboards/customdashboards.yml
+      - /some/path/Teslamate-CustomGrafanaDashboards-amap/dashboards:/TeslamateCustomDashboards
 ```
 
 ## How to update the Dashboards
@@ -313,6 +313,7 @@ Licensed under the [MIT license][license-url].
 [discussions-url]: https://github.com/jheredianet/Teslamate-CustomGrafanaDashboards/discussions
 [license-shield]: https://img.shields.io/github/license/jheredianet/Teslamate-CustomGrafanaDashboards.svg?style=for-the-badge
 [license-url]: ./LICENSE
+
 
 
 
