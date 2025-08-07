@@ -790,9 +790,11 @@
       "maxDataPoints": 50000,
       "options": {
         "basemap": {
-          "config": {},
+          "config": {
+            "url": "https://webrd0{1-4}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}"
+          },
           "name": "Layer 0",
-          "type": "osm-standard"
+          "type": "xyz"
         },
         "controls": {
           "mouseWheelZoom": true,
@@ -883,7 +885,7 @@
           "hide": false,
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__time(date),\n  latitude,\n  longitude\nFROM positions\nWHERE \n  car_id = $car_id AND \n  $__timeFilter(date)\nORDER BY \n  date ASC",
+          "rawSql": "WITH converted_positions AS (\n\tSELECT\n\t\t$__timeGroup(date, '5s') AS time,\n\t\t(wgs84_to_gcj02(latitude, longitude)).gcjLat AS gcj_latitude,\n\t\t(wgs84_to_gcj02(latitude, longitude)).gcjLon AS gcj_longitude\n\tFROM\n\t\tpositions\n\tWHERE\n\t\tcar_id = $car_id AND\n\t\t$__timeFilter(date)\n)\nSELECT\n\ttime,\n\tavg(gcj_latitude) AS latitude,\n\tavg(gcj_longitude) AS longitude\nFROM\n\tconverted_positions\nGROUP BY\n\ttime\nORDER BY\n\ttime ASC;",
           "refId": "A",
           "select": [
             [
