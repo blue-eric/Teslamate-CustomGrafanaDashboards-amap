@@ -2,7 +2,7 @@
 
 # TeslaMate Custom Grafana Dashboards
 
-### Last release: [v2025.7.11](https://github.com/jheredianet/Teslamate-CustomGrafanaDashboards/releases/)
+### Last release: [v2025.8.31](https://github.com/jheredianet/Teslamate-CustomGrafanaDashboards/releases/)
 
 <!-- PROJECT SHIELDS -->
 <!--
