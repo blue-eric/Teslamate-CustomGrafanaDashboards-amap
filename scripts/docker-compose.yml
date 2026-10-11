@@ -1,9 +1,7 @@
-version: "3"
-
 # This is the official docker-compose.yml sample from Teslamate
 # https://docs.teslamate.org/docs/installation/docker
 
-# Take a look on line 47 in order to add two lines to get the auto-import feature from this repo to Grafana
+# Take a look on line 48 in order to add two lines to get the auto-import feature from this repo to Grafana
 
 services:
   teslamate:
@@ -24,7 +22,7 @@ services:
       - all
 
   database:
-    image: postgres:14
+    image: postgres:18-trixie
     restart: always
     environment:
       - POSTGRES_USER=teslamate
