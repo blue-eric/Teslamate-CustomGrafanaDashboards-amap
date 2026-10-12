@@ -167,6 +167,42 @@
                 "value": "percent"
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "SOC"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "电量"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Power"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "功率"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Charge"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "充电"
+              }
+            ]
           }
         ]
       },
@@ -380,7 +416,20 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Charger Carrier"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "充电运营商"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 16,

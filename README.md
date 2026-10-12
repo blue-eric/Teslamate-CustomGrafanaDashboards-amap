@@ -38,7 +38,20 @@ docker compose exec -T database psql -U teslamate -d teslamate < ~/Teslamate-Cus
 
 ### 翻译的范围
 
-翻译的是仪表板标题、面板标题、说明文字、表头和图例名称、筛选项名称、状态文字等界面文字。SQL 查询不做任何改动，所以有些直接来自数据库的列名或数值仍是英文。
+翻译表分为三个文件：
+
+| 文件 | 内容 | 维护方式 |
+| --- | --- | --- |
+| `i18n/zh-CN.json` | 标题、说明、表头、图例、筛选项等界面文字，以及 SQL 返回的列名（如 `"Logged"`） | `--update` 自动收集新文字，填写译文即可 |
+| `i18n/zh-CN.sql.json` | SQL 里只用于显示的文字片段（如 `'Other'`、月份格式 `'YYYY Month'`），按原样替换 | 手动维护，只放不参与比较和关联的显示文字 |
+| `i18n/zh-CN.values.json` | 数据库原始值的显示文字（如车辆状态 online/asleep） | 手动维护 |
+
+说明：
+
+- SQL 返回的列名不修改 SQL，而是通过 Grafana 的"显示名称"覆盖来翻译，查询本身保持不变。
+- 带空格、大写或符号的列名（如 `"Power [kW]"`）会被自动收集；像 `speed` 这种标识符形式的列名需要手动加到 `i18n/zh-CN.json` 才会翻译。
+- 以下文字由 Grafana 自身生成，仪表板无法翻译：时长格式（如 "2 hours, 35 minutes"）、图例统计名（Max/Min/Mean/Last）、开关值（On/Off）、表格表头 Name/Value/Percent 等。
+- 地址、地理围栏名称、充电运营商等是你的数据，保持原样。
 
 ### 与原作者仓库同步
 
@@ -63,6 +76,8 @@ git add -A && git commit -m "Sync upstream and update Chinese translation"
 - 如果合并时出现冲突，通常是原作者修改了已改为高德地图的 4 个地图面板，需要手动保留高德底图和 `wgs84_to_gcj02` 坐标转换后再继续。
 - 翻译中的 `$变量`、`${变量}` 必须原样保留（可以写成 `${变量:text}` 来显示选项文字），否则脚本会给出警告并保留英文。
 - 原作者删除的文字会留在翻译表中，可用 `python3 scripts/build_i18n.py --prune` 清理。
+- 如果原作者改动了 `i18n/zh-CN.sql.json` 或 `i18n/zh-CN.values.json` 中引用的 SQL，脚本会提示"no longer found"，需要对照新的 SQL 更新这两个文件。
+- 新增面板如果用正则选择字段（如 `/^Added$/`），脚本会自动同步改名；更复杂的正则会保留英文列名，以免面板显示 No data。
 
 # TeslaMate Custom Grafana Dashboards
 

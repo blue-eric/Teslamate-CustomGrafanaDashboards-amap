@@ -1,0 +1,8 @@
+{
+  "_comment": "Value mappings added to panels whose SQL contains the key. Use for raw database values shown as text, e.g. the car state.",
+  "select $__time(start_date), state from states": {
+    "online": "在线",
+    "offline": "离线",
+    "asleep": "休眠"
+  }
+}

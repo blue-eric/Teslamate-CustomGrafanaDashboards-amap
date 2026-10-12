@@ -220,7 +220,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "Elevation"
+                "value": "海拔"
               },
               {
                 "id": "color",
@@ -1122,7 +1122,32 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Up"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "上坡"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Down"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "下坡"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 3,
@@ -1328,7 +1353,8 @@
         "query": "SELECT TO_CHAR(timezone('$__timezone', timezone('UTC', start_date)), 'YYYY') as year FROM drives\nWHERE car_id = $car_id\nGROUP BY 1\nORDER BY 1 DESC;",
         "refresh": 1,
         "regex": "",
-        "type": "query"
+        "type": "query",
+        "label": "年"
       },
       {
         "current": {},
@@ -1343,7 +1369,8 @@
         "query": "(SELECT TO_CHAR(timezone('$__timezone', timezone('UTC', start_date)), 'MM') as month FROM drives WHERE car_id = $car_id ORDER BY start_date DESC LIMIT 1)\nUNION ALL\n(SELECT TO_CHAR(timezone('$__timezone', timezone('UTC', start_date)), 'MM') as month FROM drives WHERE car_id = $car_id AND TO_CHAR(timezone('$__timezone', timezone('UTC', start_date)), 'YYYY') = '$Year'\nGROUP BY 1\nORDER BY 1);",
         "refresh": 1,
         "regex": "",
-        "type": "query"
+        "type": "query",
+        "label": "月"
       },
       {
         "current": {},
@@ -1358,7 +1385,8 @@
         "query": "(SELECT TO_CHAR(timezone('$__timezone', timezone('UTC', start_date)), 'DD') as day FROM drives WHERE car_id = $car_id ORDER BY start_date DESC LIMIT 1)\nUNION ALL\n(SELECT TO_CHAR(timezone('$__timezone', timezone('UTC', start_date)), 'DD') as day FROM drives \nWHERE  car_id = $car_id AND TO_CHAR(timezone('$__timezone', timezone('UTC', start_date)), 'YYYY') = '$Year'  AND TO_CHAR(timezone('$__timezone', timezone('UTC', start_date)), 'MM') = '$Month'\nGROUP BY 1 ORDER BY 1);",
         "refresh": 1,
         "regex": "",
-        "type": "query"
+        "type": "query",
+        "label": "日"
       },
       {
         "current": {},

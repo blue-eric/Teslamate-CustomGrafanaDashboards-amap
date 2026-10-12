@@ -118,7 +118,7 @@
           "hide": false,
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  'Car ID: ' || id as id,\n  'Name: ' || name as name ,\n  'Model: ' || model as model,\n  'VIN: ' || vin as vin, \n  'Color: ' || exterior_color as color,\n  'Wheels: '|| wheel_type,\n  'Current ${preferred_range} efficiency: ' || round((efficiency / convert_km(1, '$length_unit') * 1000)) || 'Wh/$length_unit' as efficiency\nFROM cars\nWHERE id = $car_id",
+          "rawSql": "SELECT\n  '车辆 ID：' || id as id,\n  '名称：' || name as name ,\n  '车型：' || model as model,\n  '车架号：' || vin as vin, \n  '颜色：' || exterior_color as color,\n  '轮毂：'|| wheel_type,\n  '当前 ${preferred_range} 能效：' || round((efficiency / convert_km(1, '$length_unit') * 1000)) || 'Wh/$length_unit' as efficiency\nFROM cars\nWHERE id = $car_id",
           "refId": "A",
           "select": [
             [
@@ -215,7 +215,20 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Drive ID"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "行程 ID"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 7,
@@ -305,7 +318,20 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Charging Process ID"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "充电记录 ID"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 7,

@@ -765,7 +765,8 @@
         ],
         "query": "month,year",
         "refresh": 2,
-        "type": "interval"
+        "type": "interval",
+        "label": "周期"
       },
       {
         "current": {

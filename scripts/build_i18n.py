@@ -4,7 +4,14 @@
 The English dashboards in dashboards/ stay the single source of truth (they are
 kept in sync with the upstream project). This script reads them, replaces the
 user-visible texts using i18n/<lang>.json and writes the result to
-dashboards-<lang>/. SQL queries and field references are never touched.
+dashboards-<lang>/.
+
+Column names returned by the SQL are translated with display-name overrides,
+so queries and field references keep working. The only SQL changes are the
+display-only snippets listed by hand in i18n/<lang>.sql.json (for example the
+text 'Other' or the to_char() month format); --update never adds to that file.
+Column names that look like identifiers ("speed") are only translated when
+they are added to the table by hand.
 
 Typical use after merging upstream changes:
 
@@ -35,6 +42,8 @@ SRC_DIR = os.path.join(ROOT, "dashboards")
 LANGS = {
     "zh-CN": {
         "table": os.path.join(ROOT, "i18n", "zh-CN.json"),
+        "sql_table": os.path.join(ROOT, "i18n", "zh-CN.sql.json"),
+        "values_table": os.path.join(ROOT, "i18n", "zh-CN.values.json"),
         "out": os.path.join(ROOT, "dashboards-zh"),
         "uid_suffix": "-zh",
         "tag": "TeslamateCustomDashboardsZh",
@@ -59,9 +68,12 @@ def translatable(text):
 
 
 class Translator:
-    def __init__(self, table):
+    def __init__(self, table, sql_table, values_table=None):
         self.table = table
+        self.sql_table = sql_table
+        self.values_table = values_table or {}
         self.seen = []  # every translatable text, in order of appearance
+        self.sql_used = set()
         self.problems = []
 
     def __call__(self, text):
@@ -69,6 +81,17 @@ class Translator:
             return text
         if text not in self.seen:
             self.seen.append(text)
+        return self._result(text)
+
+    def optional(self, text):
+        """Translate only if the table has an entry; never added by --update."""
+        if not isinstance(text, str) or text not in self.table:
+            return text
+        if text not in self.seen:
+            self.seen.append(text)
+        return self._result(text)
+
+    def _result(self, text):
         result = self.table.get(text) or ""
         if not result:
             return text
@@ -76,6 +99,44 @@ class Translator:
             self.problems.append(f"variables differ, kept English: {text!r} -> {result!r}")
             return text
         return result
+
+    def sql(self, sql):
+        """Replace display-only SQL snippets listed in i18n/<lang>.sql.json."""
+        replaced = {}
+        for old, new in self.sql_table.items():
+            if old.startswith("_") or not new or old not in sql:
+                continue
+            self.sql_used.add(old)
+            if variable_names(old) != variable_names(new):
+                self.problems.append(f"variables differ, SQL kept: {old!r} -> {new!r}")
+                continue
+            sql = sql.replace(old, new)
+            # A replaced text literal may be a series name that overrides match on.
+            literal_old, literal_new = re.findall(r"'([^']*)'", old), re.findall(r"'([^']*)'", new)
+            if len(literal_old) == 1 and len(literal_new) == 1:
+                replaced[literal_old[0]] = literal_new[0]
+        return sql, replaced
+
+
+def iter_strings(node):
+    if isinstance(node, str):
+        yield node
+    elif isinstance(node, dict):
+        for value in node.values():
+            yield from iter_strings(value)
+    elif isinstance(node, list):
+        for value in node:
+            yield from iter_strings(value)
+
+
+def replace_strings(node, old, new):
+    """Replace string values equal to old anywhere inside node."""
+    items = node.items() if isinstance(node, dict) else enumerate(node) if isinstance(node, list) else []
+    for key, value in list(items):
+        if value == old:
+            node[key] = new
+        else:
+            replace_strings(value, old, new)
 
 
 def iter_panels(panels):
@@ -121,6 +182,35 @@ def panel_sql(panel):
                      for target in panel.get("targets") or [])
 
 
+ALIAS_RE = re.compile(r'\bAS\s+(?:"([^"]+)"|([A-Za-z_][A-Za-z0-9_${}]*))', re.IGNORECASE)
+
+
+def sql_aliases(panel):
+    """Column names the panel's queries return (Postgres lowercases unquoted ones)."""
+    names = []
+    for target in panel.get("targets") or []:
+        if target.get("hide"):
+            continue
+        for quoted, plain in ALIAS_RE.findall(str(target.get("rawSql", ""))):
+            name = quoted or plain.lower()
+            if name not in names:
+                names.append(name)
+    return names
+
+
+def is_alias_in(name, sql):
+    name = re.escape(name.lower())
+    return re.search(rf'"{name}"|\bas\s+{name}(?![\w$])', sql) is not None
+
+
+def name_matcher(name):
+    """Override matcher for a column name; names with variables need a regex."""
+    if not VAR_RE.search(name):
+        return {"id": "byName", "options": name}
+    parts = VAR_RE.split(name)
+    return {"id": "byRegexp", "options": "/^" + ".+".join(re.escape(part) for part in parts) + "$/"}
+
+
 def translate_panel(panel, t):
     for key in ("title", "description"):
         if key in panel:
@@ -136,16 +226,34 @@ def translate_panel(panel, t):
     translate_field_config(defaults, t)
 
     # Field display names may be referenced elsewhere in the panel (override
-    # matchers, table sorting), so they are renamed together. A name that also
-    # appears in the panel's SQL might be a raw column name and is left as is.
+    # matchers, table sorting), so they are renamed together. A name that is
+    # also a column name in the panel's SQL might be matched as a raw column
+    # name and is left as is.
     sql = panel_sql(panel).lower()
+    aliases = sql_aliases(panel)
     renamed = {}
 
+    # Raw database values shown as text (i18n/<lang>.values.json).
+    for snippet, values in t.values_table.items():
+        if snippet.startswith("_") or snippet.lower() not in sql:
+            continue
+        t.sql_used.add(snippet)
+        options_ = {raw: {"index": i, "text": text} for i, (raw, text) in enumerate(values.items())}
+        defaults.setdefault("mappings", []).append({"type": "value", "options": options_})
+        field_config["defaults"] = defaults
+        panel["fieldConfig"] = field_config
+
+    # Display-only texts produced by the SQL itself (e.g. 'Other', month names).
+    for target in panel.get("targets") or []:
+        if isinstance(target.get("rawSql"), str):
+            target["rawSql"], literals = t.sql(target["rawSql"])
+            renamed.update(literals)
+
     def rename(name):
-        if not translatable(name) or f'"{name.lower()}"' in sql or f"as {name.lower()}" in sql:
+        if not translatable(name):
             return name
         new = t(name)
-        if new != name:
+        if new != name and not is_alias_in(name, sql):
             renamed[name] = new
         return new
 
@@ -163,6 +271,10 @@ def translate_panel(panel, t):
                 translate_mappings(prop.get("value"), t)
             elif prop.get("id") == "links":
                 translate_links(prop.get("value"), t)
+            elif prop.get("id") == "unit":
+                prop["value"] = t.optional(prop.get("value"))
+    if "unit" in defaults:
+        defaults["unit"] = t.optional(defaults["unit"])
     for transformation in panel.get("transformations") or []:
         if transformation.get("id") == "organize":
             names = (transformation.get("options") or {}).get("renameByName") or {}
@@ -177,11 +289,65 @@ def translate_panel(panel, t):
         if sort.get("displayName") in renamed:
             sort["displayName"] = renamed[sort["displayName"]]
 
+    # Column names coming straight from the SQL get a display name through an
+    # override added after the existing ones, so the SQL and the existing
+    # overrides keep using the original names. Readable names ("Power [kW]")
+    # are collected automatically, others ("speed") only when in the table.
+    if defaults.get("displayName"):
+        return
+    handled = set()
+    regexes = []
+    for override in overrides:
+        matcher = override.get("matcher") or {}
+        ids = {prop.get("id") for prop in override.get("properties") or []}
+        if "displayName" not in ids:
+            continue
+        if matcher.get("id") == "byName":
+            handled.add(matcher.get("options"))
+        elif matcher.get("id") == "byRegexp":
+            regexes.append(str(matcher.get("options", "")).strip("/"))
+    for transformation in panel.get("transformations") or []:
+        handled.update(((transformation.get("options") or {}).get("renameByName") or {}).keys())
+    # Identifier-like names added to the table by hand may also be plain
+    # columns without an alias ("SELECT battery_level ...").
+    for name in t.table:
+        if (re.fullmatch(r"[a-z_][a-z0-9_]*", name) and name not in aliases
+                and re.search(rf"(?:\bselect|,)\s*(?:\w+\.)?{name}\s*(?:,|\bfrom\b)", sql)):
+            aliases.append(name)
+    # Table sorting and regex field selectors (e.g. reduceOptions.fields
+    # "/^Added$/") refer to the display name: a plain "/^name$/" selector is
+    # renamed along with the column, a column used in any other regex keeps
+    # its original name.
+    selectors = [value for value in iter_strings(options) if value.startswith("/")]
+    added = []
+    for name in aliases:
+        if name in handled or any(re.search(pattern, VAR_RE.sub("x", name)) for pattern in regexes):
+            continue
+        plain_selector = f"/^{name}$/"
+        if any(name in selector and selector != plain_selector for selector in selectors):
+            continue
+        readable = re.search(r"[A-Z\s\[\(%#]", VAR_RE.sub("", name))
+        new = t(name) if readable and translatable(name) else t.optional(name)
+        if new == name:
+            continue
+        added.append({"matcher": name_matcher(name), "properties": [{"id": "displayName", "value": new}]})
+        replace_strings(options, plain_selector, "/^" + re.escape(new) + "$/")
+        for sort in options.get("sortBy") or []:
+            if sort.get("displayName") == name:
+                sort["displayName"] = new
+    if added:
+        field_config.setdefault("overrides", []).extend(added)
+        panel["fieldConfig"] = field_config
+
 
 def translate_variable(variable, t):
     for key in ("label", "description"):
         if key in variable:
             variable[key] = t(variable[key])
+    if not variable.get("label") and variable.get("hide") in (None, 0) and translatable(variable.get("name")):
+        label = t(variable["name"])  # Grafana shows the name when there is no label
+        if label != variable["name"]:
+            variable["label"] = label
     if variable.get("type") != "custom":
         return
     # "a, b" or "text : value" items: translate the displayed text only.
@@ -255,7 +421,15 @@ def main():
     if os.path.exists(lang["table"]):
         with open(lang["table"], encoding="utf-8") as f:
             table = json.load(f)
-    t = Translator(table)
+    sql_table = {}
+    if os.path.exists(lang["sql_table"]):
+        with open(lang["sql_table"], encoding="utf-8") as f:
+            sql_table = json.load(f)
+    values_table = {}
+    if os.path.exists(lang["values_table"]):
+        with open(lang["values_table"], encoding="utf-8") as f:
+            values_table = json.load(f)
+    t = Translator(table, sql_table, values_table)
 
     sources = sorted(glob.glob(os.path.join(SRC_DIR, "*.json")))
     dashboards = {}
@@ -272,6 +446,9 @@ def main():
 
     missing = [text for text in t.seen if not table.get(text)]
     unused = [text for text in table if text not in t.seen]
+    for old in list(sql_table) + list(values_table):
+        if not old.startswith("_") and old not in t.sql_used:
+            t.problems.append(f"SQL snippet no longer found in any dashboard: {old!r}")
     for problem in t.problems:
         print("WARNING:", problem)
 

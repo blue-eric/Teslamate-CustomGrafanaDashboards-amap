@@ -213,6 +213,42 @@
                 "value": 0
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "SOC"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "电量"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Power"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "功率"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Charge"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "充电"
+              }
+            ]
           }
         ]
       },
@@ -522,6 +558,42 @@
                 "value": 0
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "SOC"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "电量"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Power"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "功率"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Charge"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "充电"
+              }
+            ]
           }
         ]
       },
@@ -782,7 +854,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "WITH charges_summary AS (\n    SELECT\n        cp.id,\n        COALESCE(geo.name, CONCAT_WS(', ', COALESCE(addr.name, nullif(CONCAT_WS(' ', addr.road, addr.house_number), '')), addr.city)) AS location,\n        COUNT(c.charging_process_id)\n    FROM\n        charging_processes cp\n    LEFT JOIN \n        addresses addr ON addr.id = address_id\n    LEFT JOIN\n        geofences geo ON geo.id = geofence_id\n    LEFT JOIN\n        charges c ON cp.id = c.charging_process_id\n    WHERE\n        $__timeFilter(date) AND\n        cp.car_id = $car_id AND cp.charge_energy_added > 0.01 AND c.fast_charger_present \n    GROUP BY 1, 2\n)\nSELECT \n    CASE\n        WHEN location ILIKE '%supercharger%' THEN 'Tesla Supercharger'\n        ELSE 'Other DC Stations' END AS location,\n    COUNT(location) AS n\nFROM charges_summary\nGROUP BY 1",
+          "rawSql": "WITH charges_summary AS (\n    SELECT\n        cp.id,\n        COALESCE(geo.name, CONCAT_WS(', ', COALESCE(addr.name, nullif(CONCAT_WS(' ', addr.road, addr.house_number), '')), addr.city)) AS location,\n        COUNT(c.charging_process_id)\n    FROM\n        charging_processes cp\n    LEFT JOIN \n        addresses addr ON addr.id = address_id\n    LEFT JOIN\n        geofences geo ON geo.id = geofence_id\n    LEFT JOIN\n        charges c ON cp.id = c.charging_process_id\n    WHERE\n        $__timeFilter(date) AND\n        cp.car_id = $car_id AND cp.charge_energy_added > 0.01 AND c.fast_charger_present \n    GROUP BY 1, 2\n)\nSELECT \n    CASE\n        WHEN location ILIKE '%supercharger%' THEN '特斯拉超充站'\n        ELSE '其他直流快充站' END AS location,\n    COUNT(location) AS n\nFROM charges_summary\nGROUP BY 1",
           "refId": "A",
           "select": [
             [
@@ -874,6 +946,18 @@
               {
                 "id": "unit",
                 "value": "kwatt"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Power [kW]"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "功率 [kW]"
               }
             ]
           }

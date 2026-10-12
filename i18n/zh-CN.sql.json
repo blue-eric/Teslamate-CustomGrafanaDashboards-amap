@@ -1,0 +1,23 @@
+{
+  "_comment": "Display-only SQL snippets, replaced verbatim in the queries. Only add snippets whose text is shown to the user and never compared or joined on.",
+  "'YYYY Month'": "'YYYY\"年\"FMMM\"月\"'",
+  "'week ' ||": "'第 ' ||",
+  "|| ' starting ' ||": "|| ' 周，开始于 ' ||",
+  "THEN 'Superchargers'": "THEN '超充站'",
+  "ELSE 'Other'\r\n": "ELSE '其他'\r\n",
+  "THEN 'Tesla Supercharger'": "THEN '特斯拉超充站'",
+  "ELSE 'Other DC Stations'": "ELSE '其他直流快充站'",
+  "'Car ID: '": "'车辆 ID：'",
+  "'Name: '": "'名称：'",
+  "'Model: '": "'车型：'",
+  "'VIN: '": "'车架号：'",
+  "'Color: '": "'颜色：'",
+  "'Wheels: '": "'轮毂：'",
+  "'Current ${preferred_range} efficiency: '": "'当前 ${preferred_range} 能效：'",
+  "THEN 'online'": "THEN '在线'",
+  "THEN 'driving'": "THEN '行驶中'",
+  "THEN 'charging'": "THEN '充电中'",
+  "THEN 'offline'": "THEN '离线'",
+  "THEN 'asleep'": "THEN '休眠'",
+  "THEN 'updating'": "THEN '更新中'"
+}

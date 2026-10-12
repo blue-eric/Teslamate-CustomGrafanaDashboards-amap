@@ -98,7 +98,20 @@
           },
           "unit": "%"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "SOC [%]"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "电量 [%]"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 3,
@@ -342,7 +355,20 @@
           },
           "unit": "kwatth"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Battery Capacity"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "电池容量"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 3,
@@ -472,7 +498,20 @@
           },
           "unit": "kwatth"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Added"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "已充入"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 4,
@@ -489,7 +528,7 @@
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "/^Added$/",
+          "fields": "/^已充入$/",
           "values": false
         },
         "showThresholdLabels": false,
@@ -725,6 +764,42 @@
                 "value": "bool_on_off"
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "SOC [%]"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "电量 [%]"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Power [kW]"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "功率 [kW]"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Battery heater"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "电池加热"
+              }
+            ]
           }
         ]
       },
@@ -832,7 +907,32 @@
           },
           "unit": "percent"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Initial SOC"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "初始电量"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Added"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "已充入"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 6,
@@ -955,7 +1055,20 @@
           },
           "unit": "clocks"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Elapsed"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "已用时间"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 3,
@@ -1412,6 +1525,18 @@
                 "value": "amp"
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "AC Input Current"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "交流输入电流"
+              }
+            ]
           }
         ]
       },
@@ -1498,7 +1623,20 @@
           },
           "unit": "volt"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "AC Input Voltage"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "交流输入电压"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 4,
@@ -1517,7 +1655,7 @@
           "calcs": [
             "mean"
           ],
-          "fields": "/^AC Input Voltage$/",
+          "fields": "/^交流输入电压$/",
           "values": false
         },
         "showPercentChange": false,
@@ -1582,7 +1720,20 @@
           },
           "unit": "kwatt"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Power"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "功率"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 4,
@@ -1700,7 +1851,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "Start"
+                "value": "开始"
               }
             ]
           },
@@ -1712,7 +1863,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "Added"
+                "value": "已充入"
               }
             ]
           },
@@ -1995,7 +2146,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "Outdoor"
+                "value": "车外"
               }
             ]
           },
@@ -2007,7 +2158,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "Inside"
+                "value": "车内"
               }
             ]
           },
@@ -2019,7 +2170,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "Driver"
+                "value": "主驾设定"
               }
             ]
           }

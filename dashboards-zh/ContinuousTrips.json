@@ -127,7 +127,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "Distance"
+                "value": "距离"
               },
               {
                 "id": "unit",
@@ -168,7 +168,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "Distance"
+                "value": "距离"
               },
               {
                 "id": "unit",
@@ -228,7 +228,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "Duration"
+                "value": "时长"
               },
               {
                 "id": "unit",
@@ -530,6 +530,30 @@
                 "value": {
                   "mode": "continuous-RdYlGr"
                 }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "% Start"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "% 开始"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "% End"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "% 结束"
               }
             ]
           }

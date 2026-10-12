@@ -62,7 +62,25 @@
       "description": "只区分在线、离线和休眠三种状态。",
       "fieldConfig": {
         "defaults": {
-          "mappings": [],
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "online": {
+                  "index": 0,
+                  "text": "在线"
+                },
+                "offline": {
+                  "index": 1,
+                  "text": "离线"
+                },
+                "asleep": {
+                  "index": 2,
+                  "text": "休眠"
+                }
+              }
+            }
+          ],
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -74,7 +92,20 @@
           },
           "unit": "none"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "state"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "状态"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 3,
@@ -99,7 +130,7 @@
           "calcs": [
             "mean"
           ],
-          "fields": "/^state$/",
+          "fields": "/^状态$/",
           "values": true
         },
         "showPercentChange": false,
@@ -152,7 +183,25 @@
       "description": "这个仪表板用 TeslaMate 记录的最新数据显示车辆的当前状态。\n\n此外，还可以查看所选时间段内各状态的统计。",
       "fieldConfig": {
         "defaults": {
-          "mappings": [],
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "online": {
+                  "index": 0,
+                  "text": "在线"
+                },
+                "offline": {
+                  "index": 1,
+                  "text": "离线"
+                },
+                "asleep": {
+                  "index": 2,
+                  "text": "休眠"
+                }
+              }
+            }
+          ],
           "noValue": "-",
           "thresholds": {
             "mode": "absolute",
@@ -165,7 +214,20 @@
           },
           "unit": "dateTimeAsSystem"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "state"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "状态"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 3,
@@ -288,6 +350,18 @@
               {
                 "id": "unit",
                 "value": "lengthmi"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "range"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "续航"
               }
             ]
           }
@@ -414,6 +488,18 @@
                 "value": "lengthmi"
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "range"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "续航"
+              }
+            ]
           }
         ]
       },
@@ -524,7 +610,20 @@
           },
           "unit": "percent"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "battery_level"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "电量"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 4,
@@ -679,7 +778,56 @@
           },
           "unit": "none"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Front left"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "左前"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Front right"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "右前"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Rear left"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "左后"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Rear right"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "右后"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 8,
@@ -985,7 +1133,20 @@
           },
           "unit": "degree"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/^Driver\\ Temperature\\ \\[°.+\\]$/"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "主驾温度设定 [°$temp_unit]"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 4,
@@ -1072,7 +1233,20 @@
           },
           "unit": "degree"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/^Inside\\ Temperature\\ \\[°.+\\]$/"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "车内温度 [°$temp_unit]"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 4,
@@ -1159,7 +1333,20 @@
           },
           "unit": "degree"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/^Outside\\ Temperature\\ \\[°.+\\]$/"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "车外温度 [°$temp_unit]"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 4,
@@ -1333,7 +1520,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "offline"
+              "options": "离线"
             },
             "properties": [
               {
@@ -1348,7 +1535,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "online"
+              "options": "在线"
             },
             "properties": [
               {
@@ -1363,7 +1550,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "driving"
+              "options": "行驶中"
             },
             "properties": [
               {
@@ -1378,7 +1565,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "charging"
+              "options": "充电中"
             },
             "properties": [
               {
@@ -1393,7 +1580,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "updating"
+              "options": "更新中"
             },
             "properties": [
               {
@@ -1408,7 +1595,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "asleep"
+              "options": "休眠"
             },
             "properties": [
               {
@@ -1417,6 +1604,18 @@
                   "fixedColor": "green",
                   "mode": "fixed"
                 }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "state"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "状态"
               }
             ]
           }
@@ -1469,7 +1668,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "WITH states AS (\r\n  SELECT\r\n    unnest(ARRAY [start_date + interval '1 second', end_date]) AS date,\r\n    unnest(ARRAY [2, 0]) AS state\r\n  FROM charging_processes\r\n  WHERE\r\n    car_id = $car_id AND \r\n    ($__timeFrom() :: timestamp - interval '30 day') < start_date AND \r\n    (end_date < ($__timeTo() :: timestamp + interval '30 day') OR end_date IS NULL)\r\n  UNION\r\n  SELECT\r\n    unnest(ARRAY [start_date + interval '1 second', end_date]) AS date,\r\n    unnest(ARRAY [1, 0]) AS state\r\n  FROM drives\r\n  WHERE\r\n    car_id = $car_id AND \r\n    ($__timeFrom() :: timestamp - interval '30 day') < start_date AND \r\n    (end_date < ($__timeTo() :: timestamp + interval '30 day') OR end_date IS NULL)\r\n  UNION\r\n  SELECT\r\n    start_date AS date,\r\n    CASE\r\n      WHEN state = 'offline' THEN 3\r\n      WHEN state = 'asleep' THEN 4\r\n      WHEN state = 'online' THEN 5\r\n    END AS state\r\n  FROM states\r\n  WHERE\r\n    car_id = $car_id AND \r\n    ($__timeFrom() :: timestamp - interval '30 day') < start_date AND \r\n    (end_date < ($__timeTo() :: timestamp + interval '30 day') OR end_date IS NULL)\r\n  UNION\r\n  SELECT\r\n    unnest(ARRAY [start_date + interval '1 second', end_date]) AS date,\r\n    unnest(ARRAY [6, 0]) AS state\r\n  FROM updates\r\n  WHERE\r\n    car_id = $car_id AND \r\n    ($__timeFrom() :: timestamp - interval '30 day') < start_date AND \r\n    (end_date < ($__timeTo() :: timestamp + interval '30 day') OR end_date IS NULL)\r\n), aux AS (\r\n  SELECT $__timeFrom() :: timestamp AS date, (SELECT state FROM states WHERE date <= $__timeFrom() ORDER BY date DESC LIMIT 1) AS state, false AS include\r\n  UNION\r\n  SELECT date, state, true AS include FROM states\r\n  UNION\r\n  SELECT $__timeTo() :: timestamp as date, NULL AS state, true as include\r\n  ORDER BY date\r\n), states_elapsed AS (\r\n  SELECT \r\n    date, state AS current_state, include,\r\n    LAG(state) OVER (ORDER BY date) AS state,\r\n    LAG(date) OVER (ORDER BY date) AS last_state_time,\r\n    date - LAG(date) OVER (ORDER BY date) AS elapsed_time\r\n  FROM aux \r\n)\r\nSELECT \r\n    CASE\r\n      WHEN state = 0 OR state = 5 THEN 'online'\r\n      WHEN state = 1 THEN 'driving'\r\n      WHEN state = 2 THEN 'charging'\r\n      WHEN state = 3 THEN 'offline'\r\n      WHEN state = 4 THEN 'asleep'\r\n      WHEN state = 6 THEN 'updating'\r\n    END AS state,\r\n    EXTRACT(EPOCH FROM SUM(elapsed_time)) as Total_Time\r\nFROM states_elapsed\r\nWHERE $__timeFilter(date) AND include\r\nGROUP BY 1\r\n\r\n",
+          "rawSql": "WITH states AS (\r\n  SELECT\r\n    unnest(ARRAY [start_date + interval '1 second', end_date]) AS date,\r\n    unnest(ARRAY [2, 0]) AS state\r\n  FROM charging_processes\r\n  WHERE\r\n    car_id = $car_id AND \r\n    ($__timeFrom() :: timestamp - interval '30 day') < start_date AND \r\n    (end_date < ($__timeTo() :: timestamp + interval '30 day') OR end_date IS NULL)\r\n  UNION\r\n  SELECT\r\n    unnest(ARRAY [start_date + interval '1 second', end_date]) AS date,\r\n    unnest(ARRAY [1, 0]) AS state\r\n  FROM drives\r\n  WHERE\r\n    car_id = $car_id AND \r\n    ($__timeFrom() :: timestamp - interval '30 day') < start_date AND \r\n    (end_date < ($__timeTo() :: timestamp + interval '30 day') OR end_date IS NULL)\r\n  UNION\r\n  SELECT\r\n    start_date AS date,\r\n    CASE\r\n      WHEN state = 'offline' THEN 3\r\n      WHEN state = 'asleep' THEN 4\r\n      WHEN state = 'online' THEN 5\r\n    END AS state\r\n  FROM states\r\n  WHERE\r\n    car_id = $car_id AND \r\n    ($__timeFrom() :: timestamp - interval '30 day') < start_date AND \r\n    (end_date < ($__timeTo() :: timestamp + interval '30 day') OR end_date IS NULL)\r\n  UNION\r\n  SELECT\r\n    unnest(ARRAY [start_date + interval '1 second', end_date]) AS date,\r\n    unnest(ARRAY [6, 0]) AS state\r\n  FROM updates\r\n  WHERE\r\n    car_id = $car_id AND \r\n    ($__timeFrom() :: timestamp - interval '30 day') < start_date AND \r\n    (end_date < ($__timeTo() :: timestamp + interval '30 day') OR end_date IS NULL)\r\n), aux AS (\r\n  SELECT $__timeFrom() :: timestamp AS date, (SELECT state FROM states WHERE date <= $__timeFrom() ORDER BY date DESC LIMIT 1) AS state, false AS include\r\n  UNION\r\n  SELECT date, state, true AS include FROM states\r\n  UNION\r\n  SELECT $__timeTo() :: timestamp as date, NULL AS state, true as include\r\n  ORDER BY date\r\n), states_elapsed AS (\r\n  SELECT \r\n    date, state AS current_state, include,\r\n    LAG(state) OVER (ORDER BY date) AS state,\r\n    LAG(date) OVER (ORDER BY date) AS last_state_time,\r\n    date - LAG(date) OVER (ORDER BY date) AS elapsed_time\r\n  FROM aux \r\n)\r\nSELECT \r\n    CASE\r\n      WHEN state = 0 OR state = 5 THEN '在线'\r\n      WHEN state = 1 THEN '行驶中'\r\n      WHEN state = 2 THEN '充电中'\r\n      WHEN state = 3 THEN '离线'\r\n      WHEN state = 4 THEN '休眠'\r\n      WHEN state = 6 THEN '更新中'\r\n    END AS state,\r\n    EXTRACT(EPOCH FROM SUM(elapsed_time)) as Total_Time\r\nFROM states_elapsed\r\nWHERE $__timeFilter(date) AND include\r\nGROUP BY 1\r\n\r\n",
           "refId": "A",
           "select": [
             [
@@ -1823,7 +2022,20 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "state"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "状态"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 5,

@@ -161,6 +161,30 @@
                 "value": 20
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/^Odometer\\ \\[.+\\]$/"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "总里程 [${length_unit}]"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/^Max\\ .+\\ range\\ \\(.+\\ avg\\)\\ \\[.+\\]$/"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "最大 ${preferred_range} 续航（${interval:text} 平均）[${length_unit}]"
+              }
+            ]
           }
         ]
       },
@@ -274,7 +298,44 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Logged"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "已记录"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Mileage"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "里程"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Data lost (not logged)"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "丢失数据（未记录）"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 7,
@@ -468,6 +529,54 @@
               {
                 "id": "unit",
                 "value": "percent"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "# of Charges"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "充电次数"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Total Energy added"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "总充入电量"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Total Energy used"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "总用电量"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Charge Efficiency"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "充电效率"
               }
             ]
           }

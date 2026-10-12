@@ -150,7 +150,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "Power"
+                "value": "功率"
               },
               {
                 "id": "color",
@@ -190,7 +190,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "Elevation"
+                "value": "海拔"
               },
               {
                 "id": "unit",
@@ -217,7 +217,7 @@
               },
               {
                 "id": "displayName",
-                "value": "Speed"
+                "value": "车速"
               },
               {
                 "id": "custom.axisPlacement",
@@ -244,7 +244,7 @@
               },
               {
                 "id": "displayName",
-                "value": "Speed"
+                "value": "车速"
               },
               {
                 "id": "custom.axisPlacement",
@@ -264,7 +264,19 @@
               },
               {
                 "id": "displayName",
-                "value": "Elevation"
+                "value": "海拔"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Battery heater"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "电池加热"
               }
             ]
           }
@@ -788,7 +800,20 @@
           },
           "unit": "kwatth"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Battery Capacity"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "电池容量"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 4,
@@ -912,6 +937,18 @@
               {
                 "id": "unit",
                 "value": "Wh/mi"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "range"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "续航"
               }
             ]
           }
@@ -1055,7 +1092,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "Outdoor"
+                "value": "车外"
               }
             ]
           },
@@ -1067,7 +1104,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "Inside"
+                "value": "车内"
               }
             ]
           },
@@ -1079,7 +1116,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "Driver"
+                "value": "主驾设定"
               }
             ]
           }
@@ -1983,7 +2020,20 @@
           },
           "unit": "%"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "battery_level"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "电量"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 2,
