@@ -19,6 +19,51 @@ docker compose exec -T database psql -U teslamate -d teslamate < ~/Teslamate-Cus
 
 该函数只需创建一次，重复执行也不会有影响（`CREATE OR REPLACE`）。中国大陆以外的坐标会原样返回。
 
+## 中文版仪表板
+
+`dashboards-zh/` 是中文版仪表板，由脚本根据英文版 `dashboards/` 和翻译表 `i18n/zh-CN.json` 自动生成，**请不要直接修改 `dashboards-zh/` 里的文件**。
+
+中文版和英文版使用不同的 uid、标签和 Grafana 文件夹，可以只装中文版，也可以两套同时安装。
+
+### 安装中文版
+
+在 TeslaMate 的 `docker-compose.yml` 中，grafana 容器的 `volumes` 里加上这两行（如需同时保留英文版，把下文英文说明中的两行也一起加上）：
+
+```yaml
+      - ~/Teslamate-CustomGrafanaDashboards-amap/customdashboards-zh.yml:/etc/grafana/provisioning/dashboards/customdashboards-zh.yml
+      - ~/Teslamate-CustomGrafanaDashboards-amap/dashboards-zh:/TeslamateCustomDashboardsZh
+```
+
+然后重建 Grafana 容器（`docker compose up -d`），Grafana 中会出现"TeslaMate 自定义仪表板"文件夹。别忘了先按上一节创建 `wgs84_to_gcj02` 函数。
+
+### 翻译的范围
+
+翻译的是仪表板标题、面板标题、说明文字、表头和图例名称、筛选项名称、状态文字等界面文字。SQL 查询不做任何改动，所以有些直接来自数据库的列名或数值仍是英文。
+
+### 与原作者仓库同步
+
+原作者更新或新增面板后，按以下步骤同步：
+
+```bash
+# 1. 合并原作者的最新代码，并把新出现的英文文字加入翻译表
+bash scripts/sync_upstream.sh
+
+# 2. 打开 i18n/zh-CN.json，填写值为 "" 的条目（没填的会暂时显示英文）
+
+# 3. 重新生成中文版并检查
+python3 scripts/build_i18n.py
+python3 scripts/build_i18n.py --check
+
+# 4. 提交
+git add -A && git commit -m "Sync upstream and update Chinese translation"
+```
+
+注意事项：
+
+- 如果合并时出现冲突，通常是原作者修改了已改为高德地图的 4 个地图面板，需要手动保留高德底图和 `wgs84_to_gcj02` 坐标转换后再继续。
+- 翻译中的 `$变量`、`${变量}` 必须原样保留（可以写成 `${变量:text}` 来显示选项文字），否则脚本会给出警告并保留英文。
+- 原作者删除的文字会留在翻译表中，可用 `python3 scripts/build_i18n.py --prune` 清理。
+
 # TeslaMate Custom Grafana Dashboards
 
 ### Last release: [v2026.8.14](https://github.com/jheredianet/Teslamate-CustomGrafanaDashboards/releases/)

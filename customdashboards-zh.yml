@@ -1,0 +1,13 @@
+apiVersion: 1
+
+providers:
+- name: 'TeslamateCustomDashboardsZh'
+  orgId: 1
+  folder: TeslaMate 自定义仪表板
+  folderUid: jchmTmCuGrDaZh
+  type: file
+  disableDeletion: false
+  allowUiUpdates: true
+  updateIntervalSeconds: 86400
+  options:
+    path: /TeslamateCustomDashboardsZh
