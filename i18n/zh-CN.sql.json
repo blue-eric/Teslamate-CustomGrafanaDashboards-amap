@@ -19,5 +19,7 @@
   "THEN 'charging'": "THEN '充电中'",
   "THEN 'offline'": "THEN '离线'",
   "THEN 'asleep'": "THEN '休眠'",
-  "THEN 'updating'": "THEN '更新中'"
+  "THEN 'updating'": "THEN '更新中'",
+  "THEN 'Home'\r\n": "THEN '家'\r\n",
+  "THEN 'Work'\r\n": "THEN '公司'\r\n"
 }

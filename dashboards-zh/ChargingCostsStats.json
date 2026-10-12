@@ -427,7 +427,7 @@
         "type": "grafana-postgresql-datasource",
         "uid": "TeslaMate"
       },
-      "description": "如果想在这里看到在家和单位充入的电量，需要先在 TeslaMate 中建立名为 \"Home\" 和 \"Work\" 的地理围栏。",
+      "description": "名称包含 \"Home\"（或 家、住）的地理围栏会合并显示为一条\"家\"，包含 \"Work\"/\"Office\"（或 公司、单位、办公）的合并显示为一条\"公司\"，即使你有多个家或公司的地理围栏。",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -488,7 +488,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT location, SUM(charge_energy_used) AS Energy\r\nFROM (\r\nSELECT\r\n  CASE\r\n    WHEN COALESCE(geofence.name, CONCAT_WS(', ', COALESCE(address.name, nullif(CONCAT_WS(' ', address.display_name), '')))) ILIKE '%Home%' THEN COALESCE(geofence.name, CONCAT_WS(', ', COALESCE(address.name, nullif(CONCAT_WS(' ', address.display_name), ''))))\r\n\t  WHEN COALESCE(geofence.name, CONCAT_WS(', ', COALESCE(address.name, nullif(CONCAT_WS(' ', address.display_name), '')))) ILIKE '%Work%' THEN COALESCE(geofence.name, CONCAT_WS(', ', COALESCE(address.name, nullif(CONCAT_WS(' ', address.display_name), ''))))\r\n\t  WHEN COALESCE(geofence.name, CONCAT_WS(', ', COALESCE(address.name, nullif(CONCAT_WS(' ', address.display_name), '')))) ILIKE '%supercharger%' OR charges.fast_charger_brand = 'Tesla' THEN '超充站'\r\n\t  ELSE '其他'\r\n  END AS location, charge_energy_used\r\nFROM\r\n\tcharging_processes c\r\nLEFT JOIN addresses address ON c.address_id = address.id\r\nLEFT JOIN geofences geofence ON geofence_id = geofence.id\r\nLEFT JOIN charges ON charges.charging_process_id = c.id AND charges.date = c.end_date\r\nWHERE\r\n\t car_id = $car_id\r\n\tAND $__timeFilter(end_date)\r\n\tAND c.charge_energy_used > 0\r\n) ChargeLocations\r\nGROUP BY location\r\nORDER BY Energy DESC",
+          "rawSql": "SELECT location, SUM(charge_energy_used) AS Energy\r\nFROM (\r\nSELECT\r\n  CASE\r\n    WHEN COALESCE(geofence.name, CONCAT_WS(', ', COALESCE(address.name, nullif(CONCAT_WS(' ', address.display_name), '')))) ILIKE '%Home%' OR geofence.name ILIKE ANY (ARRAY['%家%', '%住%']) THEN '家'\r\n\t  WHEN COALESCE(geofence.name, CONCAT_WS(', ', COALESCE(address.name, nullif(CONCAT_WS(' ', address.display_name), '')))) ILIKE ANY (ARRAY['%Work%', '%Office%']) OR geofence.name ILIKE ANY (ARRAY['%公司%', '%单位%', '%办公%']) THEN '公司'\r\n\t  WHEN COALESCE(geofence.name, CONCAT_WS(', ', COALESCE(address.name, nullif(CONCAT_WS(' ', address.display_name), '')))) ILIKE ANY (ARRAY['%supercharger%', '%超级充电%', '%超充%']) OR charges.fast_charger_brand = 'Tesla' THEN '超充站'\r\n\t  ELSE '其他'\r\n  END AS location, charge_energy_used\r\nFROM\r\n\tcharging_processes c\r\nLEFT JOIN addresses address ON c.address_id = address.id\r\nLEFT JOIN geofences geofence ON geofence_id = geofence.id\r\nLEFT JOIN charges ON charges.charging_process_id = c.id AND charges.date = c.end_date\r\nWHERE\r\n\t car_id = $car_id\r\n\tAND $__timeFilter(end_date)\r\n\tAND c.charge_energy_used > 0\r\n) ChargeLocations\r\nGROUP BY location\r\nORDER BY Energy DESC",
           "refId": "A",
           "select": [
             [

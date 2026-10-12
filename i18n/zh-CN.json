@@ -39,7 +39,7 @@
   "# of Charges": "充电次数",
   "times": "次",
   "Main locations": "主要充电地点",
-  "For this section, it's important that you have geo-fences called \"Home\" and \"Work\" if you want to see a bar with the energy charged on those places.": "如果想在这里看到在家和单位充入的电量，需要先在 TeslaMate 中建立名为 \"Home\" 和 \"Work\" 的地理围栏。",
+  "All charges at geofences whose name contains \"Home\" (or 家/住) are shown as one \"Home\" bar, and those containing \"Work\"/\"Office\" (or 公司/单位/办公) as one \"Work\" bar, even if you have several of each.": "名称包含 \"Home\"（或 家、住）的地理围栏会合并显示为一条\"家\"，包含 \"Work\"/\"Office\"（或 公司、单位、办公）的合并显示为一条\"公司\"，即使你有多个家或公司的地理围栏。",
   "Summary AC/DC Energy Used": "交流/直流用电概览",
   "This dashboard is meant to have a look of all the charges in a given period (last 10 years by default). You can see the distance driven, number of charges, total charging cost, etc., both in summary or in separated lists.\n\nYou can expand/collapse the rows as needed.\n\nFrom the Monthly Stats row, you will have a table with links to other Teslamate Dashboards to have a look on a specific period, charge or trip.": "这个仪表板用于查看指定时间范围内（默认最近 10 年）的所有充电记录。你可以看到行驶距离、充电次数、充电总费用等信息，既有汇总，也有分项列表。\n\n各行可以按需展开或折叠。\n\n在\"月度统计\"一行中有一个表格，里面的链接可以跳转到其他 TeslaMate 仪表板，查看某个时间段、某次充电或某次行程的详情。",
   "approx. Distance powered by $geofence": "$geofence 充电约可行驶距离",
