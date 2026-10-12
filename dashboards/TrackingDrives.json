@@ -517,7 +517,7 @@
           "hide": false,
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "WITH converted_positions AS (\n\tSELECT\n\t\t$__timeGroup(date, '5s') AS time,\n\t\t(wgs84_to_gcj02(latitude, longitude)).gcjLat AS gcj_latitude,\n\t\t(wgs84_to_gcj02(latitude, longitude)).gcjLon AS gcj_longitude\n\tFROM\n\t\tpositions\n\tWHERE\n\t\tcar_id = $car_id AND\n\t\t$__timeFilter(date)\n)\nSELECT\n\ttime,\n\tavg(gcj_latitude) AS latitude,\n\tavg(gcj_longitude) AS longitude\nFROM\n\tconverted_positions\nGROUP BY\n\ttime\nORDER BY\n\ttime ASC;",
+          "rawSql": "WITH journey AS (SELECT start_date, end_date FROM drives WHERE id = $journey),\nconverted_positions AS (\n\tSELECT\n\t\t$__timeGroup(date, '5s') AS time,\n\t\t(wgs84_to_gcj02(latitude, longitude)).gcjLat AS gcj_latitude,\n\t\t(wgs84_to_gcj02(latitude, longitude)).gcjLon AS gcj_longitude\n\tFROM\n\t\tpositions, journey\n\tWHERE\n\t\tcar_id = $car_id AND\n\t\tdate BETWEEN journey.start_date AND journey.end_date\n)\nSELECT\n\ttime,\n\tavg(gcj_latitude) AS latitude,\n\tavg(gcj_longitude) AS longitude\nFROM\n\tconverted_positions\nGROUP BY\n\ttime\nORDER BY\n\ttime ASC;",
           "refId": "A",
           "select": [
             [

@@ -1,5 +1,24 @@
 # 首先感谢作者开发这么好的仪表板，然后我根据hipudding大神的思路，把仪表板改为了高德地图，这样在中国使用更方便。
 
+## 高德地图版说明
+
+本仓库在原版基础上做了以下修改：
+
+- `CurrentChargeView`、`CurrentDriveView`、`CurrentState`、`TrackingDrives` 四个仪表板的地图底图由 OpenStreetMap 改为高德地图。
+- 高德地图使用 GCJ-02（火星坐标系），而 TeslaMate 记录的是 WGS-84 坐标，因此轨迹查询会先通过 `wgs84_to_gcj02` 函数做坐标转换，再按 5 秒聚合，避免轨迹偏移。
+
+### 使用前必须先创建坐标转换函数
+
+上述仪表板依赖数据库函数 `wgs84_to_gcj02`，**导入仪表板之前请先在 TeslaMate 数据库中执行一次** [`scripts/wgs84_to_gcj02.sql`](./scripts/wgs84_to_gcj02.sql)，否则地图面板会报错 `function wgs84_to_gcj02 does not exist`。
+
+以官方 Docker 安装方式为例（数据库服务名为 `database`，用户和库名均为 `teslamate`，请按实际情况修改）：
+
+```bash
+docker compose exec -T database psql -U teslamate -d teslamate < ~/Teslamate-CustomGrafanaDashboards-amap/scripts/wgs84_to_gcj02.sql
+```
+
+该函数只需创建一次，重复执行也不会有影响（`CREATE OR REPLACE`）。中国大陆以外的坐标会原样返回。
+
 # TeslaMate Custom Grafana Dashboards
 
 ### Last release: [v2026.8.14](https://github.com/jheredianet/Teslamate-CustomGrafanaDashboards/releases/)
@@ -313,8 +332,3 @@ Licensed under the [MIT license][license-url].
 [discussions-url]: https://github.com/jheredianet/Teslamate-CustomGrafanaDashboards/discussions
 [license-shield]: https://img.shields.io/github/license/jheredianet/Teslamate-CustomGrafanaDashboards.svg?style=for-the-badge
 [license-url]: ./LICENSE
-
-
-
-
-
