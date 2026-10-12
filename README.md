@@ -17,7 +17,7 @@
 docker compose exec -T database psql -U teslamate -d teslamate < ~/Teslamate-CustomGrafanaDashboards-amap/scripts/wgs84_to_gcj02.sql
 ```
 
-该函数只需创建一次，重复执行也不会有影响（`CREATE OR REPLACE`）。中国大陆以外的坐标会原样返回。
+该函数只需创建一次，重复执行也没有影响。脚本会先删除数据库中已有的同名函数（例如以前按其他教程安装的旧版本），所以如果地图面板报错 `could not identify column "gcjlat" in record data type`，重新执行一次上面的命令即可。中国大陆以外的坐标会原样返回。
 
 ## 中文版仪表板
 
