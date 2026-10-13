@@ -73,7 +73,7 @@ git add -A && git commit -m "Sync upstream and update Chinese translation"
 
 注意事项：
 
-- 如果合并时出现冲突，通常是原作者修改了已改为高德地图的 4 个地图面板，需要手动保留高德底图和 `wgs84_to_gcj02` 坐标转换后再继续。
+- 如果合并时出现冲突，通常是原作者修改了已改为高德地图的 4 个地图面板，需要手动保留高德底图和 `amap_wgs84_to_gcj02` 坐标转换后再继续。
 - 翻译中的 `$变量`、`${变量}` 必须原样保留（可以写成 `${变量:text}` 来显示选项文字），否则脚本会给出警告并保留英文。
 - 原作者删除的文字会留在翻译表中，可用 `python3 scripts/build_i18n.py --prune` 清理。
 - 如果原作者改动了 `i18n/zh-CN.sql.json` 或 `i18n/zh-CN.values.json` 中引用的 SQL，脚本会提示"no longer found"，需要对照新的 SQL 更新这两个文件。
