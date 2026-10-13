@@ -4,26 +4,7 @@
 -- TrackingDrives call this function. Run it once against the TeslaMate database.
 -- Coordinates outside mainland China are returned unchanged.
 
--- Remove older versions of the function first (for example one taking numeric
--- arguments or returning an anonymous record): PostgreSQL would otherwise pick
--- that overload for the numeric latitude/longitude columns and the dashboards
--- fail with: could not identify column "gcjlat" in record data type.
-DO $$
-DECLARE
-    f regprocedure;
-BEGIN
-    FOR f IN
-        SELECT p.oid::regprocedure
-        FROM pg_proc p
-        JOIN pg_namespace n ON n.oid = p.pronamespace
-        WHERE p.proname = 'wgs84_to_gcj02' AND n.nspname = current_schema()
-    LOOP
-        EXECUTE 'DROP FUNCTION ' || f;
-    END LOOP;
-END
-$$;
-
-CREATE FUNCTION wgs84_to_gcj02(
+CREATE OR REPLACE FUNCTION wgs84_to_gcj02(
     lat double precision,
     lon double precision,
     OUT gcjLat double precision,
