@@ -7,9 +7,12 @@
 - `CurrentChargeView`、`CurrentDriveView`、`CurrentState`、`TrackingDrives` 四个仪表板的地图底图由 OpenStreetMap 改为高德地图。
 - 高德地图使用 GCJ-02（火星坐标系），而 TeslaMate 记录的是 WGS-84 坐标，因此轨迹查询会先通过 `wgs84_to_gcj02` 函数做坐标转换，再按 5 秒聚合，避免轨迹偏移。
 
-### 使用前必须先创建坐标转换函数
+### 坐标转换函数 `wgs84_to_gcj02`
 
-上述仪表板依赖数据库函数 `wgs84_to_gcj02`，**导入仪表板之前请先在 TeslaMate 数据库中执行一次** [`scripts/wgs84_to_gcj02.sql`](./scripts/wgs84_to_gcj02.sql)，否则地图面板会报错 `function wgs84_to_gcj02 does not exist`。
+上述仪表板通过数据库函数 `wgs84_to_gcj02(经度, 纬度)` 把轨迹转换为高德坐标，它与 hipudding 的 TeslaMate 工具（`hipudding/grafana`、`hipudding/teslamate_fix_addrs`）创建的是**同一个函数**，写法和算法完全一致。
+
+- **已经在用 hipudding 的工具**：数据库里已有这个函数，无需任何操作。
+- **没有用 hipudding 的工具**：导入仪表板之前，在 TeslaMate 数据库中执行一次 [`scripts/wgs84_to_gcj02.sql`](./scripts/wgs84_to_gcj02.sql)，否则地图面板会报错 `function wgs84_to_gcj02 does not exist`。
 
 以官方 Docker 安装方式为例（数据库服务名为 `database`，用户和库名均为 `teslamate`，请按实际情况修改）：
 
@@ -17,7 +20,7 @@
 docker compose exec -T database psql -U teslamate -d teslamate < ~/Teslamate-CustomGrafanaDashboards-amap/scripts/wgs84_to_gcj02.sql
 ```
 
-该函数只需创建一次，重复执行也不会有影响（`CREATE OR REPLACE`）。中国大陆以外的坐标会原样返回。
+这个脚本只在函数不存在时才创建，**不会覆盖已有的函数**，执行多次也没有影响：已存在时会提示 `wgs84_to_gcj02 already exists, nothing to do`。中国大陆以外的坐标会原样返回。
 
 ## 中文版仪表板
 
@@ -34,7 +37,7 @@ docker compose exec -T database psql -U teslamate -d teslamate < ~/Teslamate-Cus
       - ~/Teslamate-CustomGrafanaDashboards-amap/dashboards-zh:/TeslamateCustomDashboardsZh
 ```
 
-然后重建 Grafana 容器（`docker compose up -d`），Grafana 中会出现"TeslaMate 自定义仪表板"文件夹。别忘了先按上一节创建 `wgs84_to_gcj02` 函数。
+然后重建 Grafana 容器（`docker compose up -d`），Grafana 中会出现"TeslaMate 自定义仪表板"文件夹。别忘了先按上一节确认数据库里有 `wgs84_to_gcj02` 函数。
 
 ### 翻译的范围
 
