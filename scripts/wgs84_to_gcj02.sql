@@ -1,15 +1,29 @@
--- amap_wgs84_to_gcj02: WGS-84 -> GCJ-02 coordinate conversion for the AMap (Gaode) based dashboards.
+-- WGS-84 -> GCJ-02 coordinate conversion for the AMap (Gaode) based dashboards.
 -- TeslaMate stores positions in WGS-84, while AMap tiles use GCJ-02, so the
 -- map panels in CurrentChargeView, CurrentDriveView, CurrentState and
 -- TrackingDrives call this function. Run it once against the TeslaMate database.
 -- Coordinates outside mainland China are returned unchanged.
 
--- The function has its own name so that it never clashes with a
--- wgs84_to_gcj02 created by other tools (e.g. one taking (wgs_lon, wgs_lat)
--- and returning gcj_lon/gcj_lat); those are left untouched.
-DROP FUNCTION IF EXISTS amap_wgs84_to_gcj02(double precision, double precision);
+-- Remove older versions of the function first (for example one taking numeric
+-- arguments or returning an anonymous record): PostgreSQL would otherwise pick
+-- that overload for the numeric latitude/longitude columns and the dashboards
+-- fail with: could not identify column "gcjlat" in record data type.
+DO $$
+DECLARE
+    f regprocedure;
+BEGIN
+    FOR f IN
+        SELECT p.oid::regprocedure
+        FROM pg_proc p
+        JOIN pg_namespace n ON n.oid = p.pronamespace
+        WHERE p.proname = 'wgs84_to_gcj02' AND n.nspname = current_schema()
+    LOOP
+        EXECUTE 'DROP FUNCTION ' || f;
+    END LOOP;
+END
+$$;
 
-CREATE FUNCTION amap_wgs84_to_gcj02(
+CREATE FUNCTION wgs84_to_gcj02(
     lat double precision,
     lon double precision,
     OUT gcjLat double precision,
