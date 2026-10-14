@@ -1305,7 +1305,7 @@
           "hide": false,
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "WITH converted_positions AS (\n\tSELECT\n\t\t$__timeGroup(date, '5s') AS time,\n\t\t(wgs84_to_gcj02(longitude, latitude)).gcj_lat AS gcj_latitude,\n\t\t(wgs84_to_gcj02(longitude, latitude)).gcj_lon AS gcj_longitude\n\tFROM\n\t\tpositions\n\tWHERE\n\t\tcar_id = $car_id AND\n\t\t$__timeFilter(date)\n)\nSELECT\n\ttime,\n\tavg(gcj_latitude) AS latitude,\n\tavg(gcj_longitude) AS longitude\nFROM\n\tconverted_positions\nGROUP BY\n\ttime\nORDER BY\n\ttime ASC;",
+          "rawSql": "WITH converted_positions AS (\n\tSELECT\n\t\t$__timeGroup(date, '5s') AS time,\n\t\t(wgs84_to_gcj02(latitude, longitude)).gcjLat AS gcj_latitude,\n\t\t(wgs84_to_gcj02(latitude, longitude)).gcjLon AS gcj_longitude\n\tFROM\n\t\tpositions\n\tWHERE\n\t\tcar_id = $car_id AND\n\t\t$__timeFilter(date)\n)\nSELECT\n\ttime,\n\tavg(gcj_latitude) AS latitude,\n\tavg(gcj_longitude) AS longitude\nFROM\n\tconverted_positions\nGROUP BY\n\ttime\nORDER BY\n\ttime ASC;",
           "refId": "A",
           "select": [
             [

@@ -9,10 +9,10 @@
 
 ### 坐标转换函数 `wgs84_to_gcj02`
 
-上述仪表板通过数据库函数 `wgs84_to_gcj02(经度, 纬度)` 把轨迹转换为高德坐标，它与 hipudding 的 TeslaMate 工具（`hipudding/grafana`、`hipudding/teslamate_fix_addrs`）创建的是**同一个函数**，写法和算法完全一致。
+地图面板通过数据库函数把轨迹转换为高德坐标，调用写法为 `(wgs84_to_gcj02(latitude, longitude)).gcjLat / .gcjLon`，与 hipudding 的 Grafana 镜像（`hipudding/grafana`）完全一致。
 
-- **已经在用 hipudding 的工具**：数据库里已有这个函数，无需任何操作。
-- **没有用 hipudding 的工具**：导入仪表板之前，在 TeslaMate 数据库中执行一次 [`scripts/wgs84_to_gcj02.sql`](./scripts/wgs84_to_gcj02.sql)，否则地图面板会报错 `function wgs84_to_gcj02 does not exist`。
+- **使用 `hipudding/grafana` 镜像**：它每次启动都会自动创建这些函数，无需任何操作。
+- **使用其他 Grafana 镜像**：导入仪表板之前，在 TeslaMate 数据库中执行一次 [`scripts/wgs84_to_gcj02.sql`](./scripts/wgs84_to_gcj02.sql)，否则地图面板会报错 `function wgs84_to_gcj02 does not exist`。
 
 以官方 Docker 安装方式为例（数据库服务名为 `database`，用户和库名均为 `teslamate`，请按实际情况修改）：
 
@@ -20,7 +20,31 @@
 docker compose exec -T database psql -U teslamate -d teslamate < ~/Teslamate-CustomGrafanaDashboards-amap/scripts/wgs84_to_gcj02.sql
 ```
 
-这个脚本只在函数不存在时才创建，**不会覆盖已有的函数**，执行多次也没有影响：已存在时会提示 `wgs84_to_gcj02 already exists, nothing to do`。中国大陆以外的坐标会原样返回。
+这个脚本创建的函数与 hipudding 镜像里的 `proc.sql` 逐字相同，以后改用 `hipudding/grafana` 也不会冲突；执行多次没有影响。如果数据库里已经有一个写法不同的同名函数，脚本会中止并且不做任何修改。
+
+### 曾经安装过 wemate
+
+[wemate](https://github.com/ciyahu/wemate)（2025-11-23 起的版本）会在 TeslaMate 数据库里删除上面的 `wgs84_to_gcj02`，换成写法不同的版本（先经度后纬度、返回 `gcj_lon/gcj_lat`），并给 `positions` 表加上 `gcj_lat/gcj_lon` 列和触发器。删除 wemate 容器后这些修改仍会留在数据库里，导致：
+
+- 地图面板报错 `could not identify column "gcjlat" in record data type`；
+- `hipudding/grafana` 启动时报错 `cannot change return type of existing function`，无法创建它自己的函数。
+
+**不要只删除那个函数**：wemate 的触发器在每次写入轨迹点时都会调用它，只删函数会导致 TeslaMate 无法写入轨迹。请按以下顺序清理（在 TeslaMate 的 compose 目录下执行）：
+
+```bash
+# 1. 备份数据库
+docker compose exec -T database pg_dump -U teslamate teslamate > teslamate_backup_$(date +%F).sql
+# 2. 暂停 TeslaMate 和 Grafana
+docker compose stop teslamate grafana
+# 3. 删除 wemate 的触发器、函数和进度表（只在函数确实是 wemate 版本时才会执行，否则中止并回滚）
+docker compose exec -T database psql -U teslamate -d teslamate < ~/Teslamate-CustomGrafanaDashboards-amap/scripts/cleanup_wemate.sql
+# 4. 可选：删除 wemate 加的列（确认 Grafana 中没有在用 wemate 的仪表板后再执行）
+docker compose exec -T database psql -U teslamate -d teslamate < ~/Teslamate-CustomGrafanaDashboards-amap/scripts/cleanup_wemate_columns.sql
+# 5. 重新启动；使用 hipudding/grafana 时它会自动重建函数，否则再执行一次 scripts/wgs84_to_gcj02.sql
+docker compose up -d teslamate grafana
+```
+
+wemate 创建的几个索引（如 `drives_start_date_index`）只用于加速查询，可以保留。注意：再次运行 wemate 会重新做上述修改。
 
 ## 中文版仪表板
 
@@ -37,7 +61,7 @@ docker compose exec -T database psql -U teslamate -d teslamate < ~/Teslamate-Cus
       - ~/Teslamate-CustomGrafanaDashboards-amap/dashboards-zh:/TeslamateCustomDashboardsZh
 ```
 
-然后重建 Grafana 容器（`docker compose up -d`），Grafana 中会出现"TeslaMate 自定义仪表板"文件夹。别忘了先按上一节确认数据库里有 `wgs84_to_gcj02` 函数。
+然后重建 Grafana 容器（`docker compose up -d`），Grafana 中会出现"TeslaMate 自定义仪表板"文件夹。地图面板依赖的 `wgs84_to_gcj02` 函数见上一节。
 
 ### 翻译的范围
 
