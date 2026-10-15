@@ -1,64 +1,115 @@
-# 首先感谢作者开发这么好的仪表板，然后我根据hipudding大神的思路，把仪表板改为了高德地图，这样在中国使用更方便。
+# TeslaMate 自定义仪表板（高德地图 + 中文版）
 
-## 高德地图版说明
+为国内 TeslaMate 用户准备的一套 Grafana 自定义仪表板：
 
-本仓库在原版基础上做了以下修改：
+- **高德地图**：地图面板使用高德底图，轨迹自动从 WGS-84 转换为 GCJ-02（火星坐标），不再偏移。
+- **中文界面**：标题、表头、图例、筛选项、提示文字等全部汉化，车辆状态等数据值也显示为中文。
+- **适配国内使用习惯**：
+  - 充电曲线统计能识别中文命名的超充站（如"特斯拉超级充电站""超充"）；
+  - 充电费用统计可把多个地理围栏合并为"家""公司"统计（名称含 家/住、公司/单位/办公 等）；
+  - 修复了"当前状态"中预估续航显示 N/A 的问题。
+- **持续跟进原作者更新**：原作者新增或修改仪表板后，本仓库会同步并补上中文翻译。
 
-- `CurrentChargeView`、`CurrentDriveView`、`CurrentState`、`TrackingDrives` 四个仪表板的地图底图由 OpenStreetMap 改为高德地图。
-- 高德地图使用 GCJ-02（火星坐标系），而 TeslaMate 记录的是 WGS-84 坐标，因此轨迹查询会先通过 `wgs84_to_gcj02` 函数做坐标转换，再按 5 秒聚合，避免轨迹偏移。
+## 仪表板一览
 
-### 坐标转换函数 `wgs84_to_gcj02`
+| 仪表板 | 说明 |
+| --- | --- |
+| 当前状态 | 车辆最新状态、位置（高德地图）、电量与预估续航，以及所选时段的状态统计 |
+| 当前行程 | 开车时使用：实时显示本次行程的轨迹（高德地图）、车速、功率等，每 30 秒刷新；不在行驶时显示上一次行程 |
+| 当前充电 | 充电时使用：实时显示本次充电的位置（高德地图）、功率、电压电流等，每 30 秒刷新；不在充电时显示上一次充电 |
+| 行程追踪 | 选择一次行程，鼠标划过曲线时在高德地图上同步标出位置，查看该点的车速、功率、电量、海拔等 |
+| 连续行程 | 列出两次充电之间的全部行程，可跳转到 TeslaMate 的行程仪表板查看详情 |
+| 充电费用统计 | 指定时段内的行驶里程、充电次数、充电费用等汇总与明细，主要充电地点按"家 / 公司 / 其他"分组 |
+| 充电曲线统计 | 特斯拉超充和其他快充的充电曲线、各类充电桩的充电次数及最大功率分布 |
+| 按运营商统计直流充电曲线 | 按充电运营商筛选直流充电曲线（需要地理围栏或地址名称中包含运营商名） |
+| 里程统计 | 按年 / 月 / 周 / 日统计里程、驾驶时间、行程次数和能耗 |
+| 续航衰减 | 按时段分析里程和续航衰减，也能看出 TeslaMate 是否漏记数据 |
+| 车速分析 | 按平路 / 上坡 / 下坡和车速区间统计平均能耗与距离，以及最高车速记录 |
+| 车速与温度 | 不同气温下的能耗，了解车辆在严寒或酷暑时的效率 |
+| 购车回本追踪 | 填入购车成本等参数，估算车辆折旧和相比燃油车节省的费用 |
+| 不完整数据 | 找出因断网等原因中断的行程和充电记录，便于按官方指南修复 |
 
-地图面板通过数据库函数把轨迹转换为高德坐标，调用写法为 `(wgs84_to_gcj02(latitude, longitude)).gcjLat / .gcjLon`，与 hipudding 的 Grafana 镜像（`hipudding/grafana`）完全一致。
+## 安装
 
-- **使用 `hipudding/grafana` 镜像**：它每次启动都会自动创建这些函数，无需任何操作。
-- **使用其他 Grafana 镜像**：导入仪表板之前，在 TeslaMate 数据库中执行一次 [`scripts/wgs84_to_gcj02.sql`](./scripts/wgs84_to_gcj02.sql)，否则地图面板会报错 `function wgs84_to_gcj02 does not exist`。
+前提：已按 [TeslaMate 官方 Docker 方式](https://docs.teslamate.org/docs/installation/docker) 安装并正常运行。
 
-以官方 Docker 安装方式为例（数据库服务名为 `database`，用户和库名均为 `teslamate`，请按实际情况修改）：
+### 1. 下载本仓库
+
+在服务器上选一个目录（下面以 `~/` 为例）执行：
+
+```bash
+git clone https://github.com/blue-eric/Teslamate-CustomGrafanaDashboards-amap.git
+```
+
+### 2. 挂载到 Grafana
+
+编辑 TeslaMate 的 `docker-compose.yml`，在 grafana 服务的 `volumes` 末尾加上两行：
+
+```yaml
+services:
+  grafana:
+    ...
+    volumes:
+      - teslamate-grafana-data:/var/lib/grafana
+      - ~/Teslamate-CustomGrafanaDashboards-amap/customdashboards-zh.yml:/etc/grafana/provisioning/dashboards/customdashboards-zh.yml
+      - ~/Teslamate-CustomGrafanaDashboards-amap/dashboards-zh:/TeslamateCustomDashboardsZh
+```
+
+- 群晖等 NAS、或运行 Docker 的用户不是当前用户时，请把 `~/` 换成**完整路径**，例如 `/volume1/docker/Teslamate-CustomGrafanaDashboards-amap/...`。
+- 如果还想要英文版（同样是高德地图），再加两行；中英文版使用不同的文件夹和 uid，可以同时安装：
+
+```yaml
+      - ~/Teslamate-CustomGrafanaDashboards-amap/customdashboards.yml:/etc/grafana/provisioning/dashboards/customdashboards.yml
+      - ~/Teslamate-CustomGrafanaDashboards-amap/dashboards:/TeslamateCustomDashboards
+```
+
+### 3. 准备坐标转换函数
+
+地图面板需要 TeslaMate 数据库里有 `wgs84_to_gcj02` 函数：
+
+- **Grafana 使用 [`hipudding/grafana`](https://hub.docker.com/r/hipudding/grafana) 镜像**（推荐，TeslaMate 自带仪表板也是高德地图）：镜像每次启动都会自动创建该函数，跳过这一步。
+- **Grafana 使用官方 `teslamate/grafana` 等其他镜像**：执行一次下面的命令（数据库服务名、用户名、库名请按实际修改）：
 
 ```bash
 docker compose exec -T database psql -U teslamate -d teslamate < ~/Teslamate-CustomGrafanaDashboards-amap/scripts/wgs84_to_gcj02.sql
 ```
 
-这个脚本创建的函数与 hipudding 镜像里的 `proc.sql` 逐字相同，以后改用 `hipudding/grafana` 也不会冲突；执行多次没有影响。如果数据库里已经有一个写法不同的同名函数，脚本会中止并且不做任何修改。
+该脚本创建的函数与 `hipudding/grafana` 镜像中的完全相同，以后更换镜像也不会冲突，重复执行没有影响。如果数据库里已有一个写法不同、或正被其他程序使用的同名函数，脚本会中止且不做任何修改。
 
-## 中文版仪表板
+### 4. 启动
 
-`dashboards-zh/` 是中文版仪表板，由脚本根据英文版 `dashboards/` 和翻译表 `i18n/zh-CN.json` 自动生成，**请不要直接修改 `dashboards-zh/` 里的文件**。
-
-中文版和英文版使用不同的 uid、标签和 Grafana 文件夹，可以只装中文版，也可以两套同时安装。
-
-### 安装中文版
-
-在 TeslaMate 的 `docker-compose.yml` 中，grafana 容器的 `volumes` 里加上这两行（如需同时保留英文版，把下文英文说明中的两行也一起加上）：
-
-```yaml
-      - ~/Teslamate-CustomGrafanaDashboards-amap/customdashboards-zh.yml:/etc/grafana/provisioning/dashboards/customdashboards-zh.yml
-      - ~/Teslamate-CustomGrafanaDashboards-amap/dashboards-zh:/TeslamateCustomDashboardsZh
+```bash
+docker compose up -d
 ```
 
-然后重建 Grafana 容器（`docker compose up -d`），Grafana 中会出现"TeslaMate 自定义仪表板"文件夹。地图面板依赖的 `wgs84_to_gcj02` 函数见上一节。
+打开 Grafana，在"仪表板"中会出现 **TeslaMate 自定义仪表板** 文件夹。进入任意一个仪表板后，右上角的下拉按钮可以在各仪表板之间切换。
 
-### 翻译的范围
+## 更新
 
-翻译表分为三个文件：
+```bash
+git -C ~/Teslamate-CustomGrafanaDashboards-amap pull
+docker compose restart grafana
+```
+
+## 常见问题
+
+- **地图面板报错 `function wgs84_to_gcj02 does not exist`**：没有完成安装第 3 步。
+- **轨迹偏移几百米**：使用的不是本仓库的仪表板，或仪表板被手动改过，重新 `git pull` 并重启 Grafana。
+- **部分文字仍是英文**：时长格式（如 "2 hours, 35 minutes"）、图例统计名（Max / Min / Mean）、开关值（On / Off）等由 Grafana 自身生成，仪表板无法翻译；地址、地理围栏名称、充电运营商等是你自己的数据，保持原样。
+
+## 维护说明
+
+以下内容供本仓库维护使用，普通用户无需关注。
+
+`dashboards-zh/` 由脚本根据英文版 `dashboards/` 和翻译表自动生成，**不要直接修改 `dashboards-zh/` 里的文件**。
 
 | 文件 | 内容 | 维护方式 |
 | --- | --- | --- |
 | `i18n/zh-CN.json` | 标题、说明、表头、图例、筛选项等界面文字，以及 SQL 返回的列名（如 `"Logged"`） | `--update` 自动收集新文字，填写译文即可 |
 | `i18n/zh-CN.sql.json` | SQL 里只用于显示的文字片段（如 `'Other'`、月份格式 `'YYYY Month'`），按原样替换 | 手动维护，只放不参与比较和关联的显示文字 |
-| `i18n/zh-CN.values.json` | 数据库原始值的显示文字（如车辆状态 online/asleep） | 手动维护 |
+| `i18n/zh-CN.values.json` | 数据库原始值的显示文字（如车辆状态 online / asleep） | 手动维护 |
 
-说明：
-
-- SQL 返回的列名不修改 SQL，而是通过 Grafana 的"显示名称"覆盖来翻译，查询本身保持不变。
-- 带空格、大写或符号的列名（如 `"Power [kW]"`）会被自动收集；像 `speed` 这种标识符形式的列名需要手动加到 `i18n/zh-CN.json` 才会翻译。
-- 以下文字由 Grafana 自身生成，仪表板无法翻译：时长格式（如 "2 hours, 35 minutes"）、图例统计名（Max/Min/Mean/Last）、开关值（On/Off）、表格表头 Name/Value/Percent 等。
-- 地址、地理围栏名称、充电运营商等是你的数据，保持原样。
-
-### 与原作者仓库同步
-
-原作者更新或新增面板后，按以下步骤同步：
+同步原作者的更新：
 
 ```bash
 # 1. 合并原作者的最新代码，并把新出现的英文文字加入翻译表
@@ -76,322 +127,20 @@ git add -A && git commit -m "Sync upstream and update Chinese translation"
 
 注意事项：
 
-- 如果合并时出现冲突，通常是原作者修改了已改为高德地图的 4 个地图面板，需要手动保留高德底图和 `wgs84_to_gcj02` 坐标转换后再继续。
-- 翻译中的 `$变量`、`${变量}` 必须原样保留（可以写成 `${变量:text}` 来显示选项文字），否则脚本会给出警告并保留英文。
+- 本 README 是独立编写的，同步时始终保留本仓库的版本（由 `.gitattributes` 和同步脚本自动处理）。
+- 合并冲突通常出现在已改为高德地图的 4 个地图仪表板（当前状态、当前行程、当前充电、行程追踪），需要手动保留高德底图和 `wgs84_to_gcj02` 坐标转换。
+- SQL 返回的列名不修改 SQL，而是通过 Grafana 的"显示名称"覆盖来翻译；带空格、大写或符号的列名（如 `"Power [kW]"`）会被自动收集，像 `speed` 这种标识符形式的列名需要手动加到 `i18n/zh-CN.json`。
+- 翻译中的 `$变量`、`${变量}` 必须原样保留（可以写成 `${变量:text}` 显示选项文字），否则脚本会警告并保留英文。
 - 原作者删除的文字会留在翻译表中，可用 `python3 scripts/build_i18n.py --prune` 清理。
-- 如果原作者改动了 `i18n/zh-CN.sql.json` 或 `i18n/zh-CN.values.json` 中引用的 SQL，脚本会提示"no longer found"，需要对照新的 SQL 更新这两个文件。
+- 脚本提示 "no longer found" 时，说明原作者改了 `zh-CN.sql.json` 或 `zh-CN.values.json` 引用的 SQL，需要对照新 SQL 更新这两个文件。
 - 新增面板如果用正则选择字段（如 `/^Added$/`），脚本会自动同步改名；更复杂的正则会保留英文列名，以免面板显示 No data。
 
-# TeslaMate Custom Grafana Dashboards
+## 致谢
 
-### Last release: [v2026.8.14](https://github.com/jheredianet/Teslamate-CustomGrafanaDashboards/releases/)
+- **[Juan Carlos Heredia（jheredianet）](https://github.com/jheredianet/Teslamate-CustomGrafanaDashboards)**：本仓库的全部仪表板设计和查询均来自他的 TeslaMate Custom Grafana Dashboards 项目，本仓库只在其基础上做了高德地图适配和汉化。喜欢这些仪表板的话，欢迎去原项目点个 Star 或[支持作者](https://github.com/jheredianet/Teslamate-CustomGrafanaDashboards#donations)。
+- **[hipudding](https://github.com/hipudding/teslamate)**：高德地图方案和 `wgs84_to_gcj02` 坐标转换函数来自他的 TeslaMate 高德地图版及 `hipudding/grafana` 镜像。
+- [TeslaMate](https://github.com/teslamate-org/teslamate)：优秀的自托管特斯拉数据记录工具。
 
-<!-- PROJECT SHIELDS -->
-<!--
-*** I'm using markdown "reference style" links for readability.
-*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
-*** See the bottom of this document for the declaration of the reference variables
-*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
-*** https://www.markdownguide.org/basic-syntax/#reference-style-links
--->
-[![Stargazers][stars-shield]][stars-url][![Contributors][contributors-shield]][contributors-url][![Forks][forks-shield]][forks-url][![Issues][issues-shield]][issues-url][![Discussions][discussions-shield]][discussions-url][![MIT License][license-shield]][license-url]
+## 许可证
 
-This is a project with **Custom Grafana Dashboards**, created especially to work with a **Teslamate installation**. So the main requirement for these dashboards to work, is to have a **[Teslamate](https://docs.teslamate.org/)** running instance.
-
-## TeslaMate
-
-**[Teslamate](https://docs.teslamate.org/)** is a powerful, self-hosted data logger for your Tesla.
-
-- Written in **[Elixir](https://elixir-lang.org/)**
-- Data is stored in a **Postgres** database
-- Visualization and data analysis with **Grafana**
-- Vehicle data is published to a local **MQTT** Broker
-
-___
-
-## How to Auto-import these Custom Dashboards
-
-In order to auto-import all the dashboard files from this repository, considering that your are using the official  [Teslamate Docker install](https://docs.teslamate.org/docs/installation/docker) documentation guide, proceed as follows.
-
-**Note:** If you are using Teslamate without Docker you may skip these section and proceed to import manually.
-
-- The following command will clone the source files from this repository. This should be run in an appropriate directory within which you would like to keep it. You should also record this path and provide it later in the following steps. To keep it easy, you may run this your home path (~/) or modify it accordingly.
-
-```bash
-git clone https://github.com/blue-eric/Teslamate-CustomGrafanaDashboards-amap.git
-```
-
-- Edit your Teslamate "docker-compose.yml" file and add these two new lines at the end of the "volumes" section of the grafana container
-
-```yaml
-services:
-  ...
-  ...
-  grafana:
-    ...
-    ...
-    volumes:
-      - teslamate-grafana-data:/var/lib/grafana
-      - ~/Teslamate-CustomGrafanaDashboards-amap/customdashboards.yml:/etc/grafana/provisioning/dashboards/customdashboards.yml
-      - ~/Teslamate-CustomGrafanaDashboards-amap/dashboards:/TeslamateCustomDashboards
-```
-
-- Save your file and then **recreate** Grafana container (docker-compose up -d)
-- Browse the Grafana Dashboards from the Web and you should have a new "TeslaMate Custom Dashboards" folder
-
-## Using other path for repository
-
-Attention! On some VPS from certain providers like Google GCC, the user running docker engine is not the current user so it's home folder is different, or maybe you just want to use a specific folder for your data. If this is the case, it's better to use the **full path** of the repository where you cloned it, instead of using the home path of the current user (~/). So, be sure to modify the path of the volumes section accordingly, as the sample given below:
-
-```yaml
-services:
-  ...
-  ...
-  grafana:
-    ...
-    ...
-    volumes:
-      - teslamate-grafana-data:/var/lib/grafana
-      - /some/path/Teslamate-CustomGrafanaDashboards-amap/customdashboards.yml:/etc/grafana/provisioning/dashboards/customdashboards.yml
-      - /some/path/Teslamate-CustomGrafanaDashboards-amap/dashboards:/TeslamateCustomDashboards
-```
-
-## How to update the Dashboards
-
-If you want to be sure that you are using the latest version of the Dashboards:
-
-- Pull again from the repository
-
-```bash
-git -C ~/Teslamate-CustomGrafanaDashboards-amap pull
-```
-
-- Then **restart** Grafana container
-
-```bash
-docker compose restart grafana  
-```
-
-Or (if you are using a previous docker version)
-
-```bash
-docker-compose restart grafana  
-```
-
-## How to use these Custom Dashboards
-
-In order to use these dashboards, once imported, you may want to go to the Grafana "Browse" option (from the left vertical bar), from there you will see a new folder with the imported dashboards.
-
-![Browse](./screenshots/help/browseoption.png) ![Custom Dashboards](./screenshots/help/customdasboardfolder.png)
-
-This Custom Dashboards have a special label so they don't get mixed up with the Teslamate defaults dashboards to distinguish easier and group together. When you are in a Custom Dashboard you will see in the upper right corner, a drop-down button from  you may access the rest dashboards as well.
-
-![DropDown](./screenshots/help/dropdownbutton.png)
-___
-
-## How to manually import these custom dashboards
-
-The following steps let you import the JSON files into your setup if you don't want to auto-import them:
-
-- On Grafana (from Teslamate instance), Browse Dashboards then Import...
-- Upload JSON file or import via panel json by pasting the raw content of te JSON file.
-- On the next screen you may name the dashboard as you wish or accept the suggested one.
-- Try to keep UID as it is, because it could be linked inside the dashboard and to avoid duplicates UIDs.
-- Finally, press the "Import" button
-
-## Tips on Dashboards
-
-Have in mind that each dashboard may have an "Information" icon (as shown in the following image). If you point on it, you'll have aditional information on the current panel. Try to check it while you are browsing or analyzing your data.
-
-![InfoIcon](./screenshots/help/infoicon.png)
-___
-
-## Screenshots
-
-### [Amortization Tracker](./dashboards/AmortizationTracker.json)
-
-This dashboard aims to show the depreciation value of the car over time and its journey.
-Depreciating a car by its mileage can be done using various methods. A common approach is to use a depreciation rate per mile or to create a depreciation curve based on data. On the other hand, the depreciation of a car due to age can vary depending on several factors such as the make, model, overall condition of the vehicle, and demand in the market. Here you can put your costs, rates and other variable values to have and idea of the depreciated car value and fuel savings.
-
-![Amortization Tracker](./screenshots/AmortizationTracker.png)
-
-### [Battery Health](./dashboards/BatteryHealth.json)
-
-This dashboard has been already migrated (given) to the core dashboards of Teslamate and will continue developing directly there with the collaboration of all the enthusiasts in the community. You will find it there with the same name **Battery Health**.
-
-![Battery Health](./screenshots/BatteryHealth.png)
-
-### [Browse Charges](./dashboards/BrowseCharges.json)
-
-This dashboard has been already migrated (given) to the core dashboards of Teslamate and will continue developing directly there with the collaboration of all the enthusiasts in the community. You will find it there with the name **Charges**.
-
-![Browse Charges](./screenshots/BrowseCharges.png)
-
-### [Charging Costs Stats](./dashboards/ChargingCostsStats.json)
-
-This dashboard is meant to have a look of all the charges in a given period (last 10 years by default).
-You can see the distance driven, number of charges, total charging cost, etc., both in summary or in
-separated lists.
-
-You can expand/collapse the rows as needed.
-
-From the Monthly Stats row, you will have a table with links to other Teslamate Dashboards to have a look on a specific period, charge or trip.
-
-![Charging Costs Stats](./screenshots/ChargingCostsStats.png)
-
-### [Charging Curve Stats](./dashboards/ChargingCurveStats.json)
-
-This dashboard is meant to have a look of the charging curve sessions on Tesla Supercharges or other Fast Charging Station. Also, you can see number of fast charging sessions you've done on each type of chargers and the count of max power (kW) reached on a session as shown in the following example.
-
-![Charging Curve Stats](./screenshots/ChargingCurveStats.png)
-
-### [Continuous Trips](./dashboards/ContinuousTrips.json)
-
-This dashboard has a table with all the trips you've made between charges sesions, so you can browse the longest or shortest mileage you travel.
-
-You may also take a look to a specific trip from the initial charge session (before the trip) to the end of the of the charge session (after the trip), through the link in the first column that will take you to the TeslaMate Trips dashboard.
-
-![Continuous Trips](./screenshots/ContinuousTrips.png)
-
-### [Current Charge View](./dashboards/CurrentChargeView.json)
-
-Load this dashboard to while you are in a charging sesion. When you open this dashboard it will show the last 15 minutes, but you should click the "Current Charge" button at the top right corner, to enter in Kiosk mode:
-
-- If you are charging, you will see the information from the start time of the current charge session until now and it will refesh automatically every 30 seconds.
-- If you are just browsing (not charging) you will see the information of the last charge session.  
-
-![Current Charge View](./screenshots/CurrentChargeView.png)
-
-### [Current Drive View](./dashboards/CurrentDriveView.json)
-
-This is a special dashboard to load while driving. When you open this dashboard it will show the last 15 minutes, but you should click the "Current Drive" button at the top right corner, to enter in Kiosk mode:
-
-- If you are driving, you will see the information from the start time of the current drive until now and it will refesh automatically every 30 seconds.
-- If you are just browsing (not driving) you will see the information of the last drive.  
-
-![Current Drive View](./screenshots/CurrentDriveView.png)
-
-### [Current State](./dashboards/CurrentState.json)
-
-This dasboard is just to see the current state of the car with the last data recorded by TeslaMate.
-
-Additionally, you can see the states stats of the selected period.
-
-![Current State](./screenshots/CurrentState.png)
-
-### [Database Information](./dashboards/CurrentState.json)
-
-This dashboard has been already migrated (given) to the core dashboards of Teslamate and will continue developing directly there with the collaboration of all the enthusiasts in the community. You will find it there with the name **Database Information**.
-
-![Database Information](./screenshots/DatabaseInfo.png)
-
-### [DC Charging Curves By Carrier](./dashboards/DC_ChargingCurvesByCarrier.json)
-
-This dasboard is browse your DC charge sessions by charger carriers.
-
-It's important that you have Geo-Fences added related with the name of the carrier
-you have recharged your car, or you may want to edit periodically the **name** field of the **addresses** table, so that it contains its name.
-
-For example, if **Teslamate** geolocates the name as *"Esso Purley Way"* you may modify it to *"Esso Purley Way - IONITY"* or *"IONITY Esso Purley Way"*, then you can filter using the filter textbox **IONITY** to show all the charging curves of all charging sessions at that carrier.
-
-![DC Charging Curves By Carrier](./screenshots/DC_ChargingCurvesByCarrier.png)
-
-### [Incomplete Data](./dashboards/IncompleteData.json)
-
-With this dashboard you may find your incomplete drives or charges that have been interrupted by the connection or any other issue. So you may follow the official guide to fix it.
-
-![Incomplete Data](./screenshots/IncompleteData.png)
-
-### [Range Degradation](./dashboards/RangeDegradation.json)
-
-In this dashboard you may analyze your mileage and the range degradation by a selected period.
-
-So you may have an idea of how much of range is lost as well as if there were any failure in Teslamate logging your data.  
-
-![Range Degradation](./screenshots/RangeDegradation.png)
-
-### [Mileage Stats](./dashboards/MileageStats.json)
-
-With this dashboard you may analyze your mileage and number of drives by year, month, week or day.
-
-The dashboard shows a table with the selected period, time driven, distance, number of drives and efficiency then a bar chart to have a better look for comparison.  
-
-![Mileage Stats](./screenshots/MileageStats.png)
-
-### [Speed Rates](./dashboards/SpeedRates.json)
-
-In this dashboard you can browse the speed rates by segments, based on terrain type: Flat, Uphill or Downhill. This way you can see the average consumtion by speed and its average distance.
-Likewise, you can see the Top speeds you reached and how long it lasted.
-
-![Speed Rates](./screenshots/SpeedRates.png)
-
-### [Speed & Temperature](./dashboards/SpeedTemperature.json)
-
-In this dashboard you can browse and analyse the car consumption by temperature in short and long stretches. This way you can see the average consumption depending on the temperature to better understand the efficiency of the car in cold or hot climates.
-
-![Speed Temperature](./screenshots/SpeedTemperature.png)
-
-### [Tracking Drives](./dashboards/TrackingDrives.json)
-
-This dashboard is meant to analyze a drive based on a date you select, then you can pass the pointer over the lines in graph
-to see data details and a blue point in the map tranking the route. With this option you can analyze a specific point location in the map,
-to see the speed, power, SOC, elevation and if battery heater was on.
-
-Be aware that the drive you select in the dropdown list from the top could be outside the time range of the Timeline graph,
-if its the case you have to click on the "Zoom to data" button on the graph in order to update it.
-
-Tip: On Grafana you can press "h" to get a keyboard shortcuts if you want to change the current Zoom out time range or use the mouse to select/change the time range.
-
-![Tracking Drives](./screenshots/TrackingDrives.gif)
-
-## Contributing
-
-The following dashboards, queries and design are the result of many tests and hours of work.
-Feel free to take them for your own personal use.
-
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are greatly appreciated.
-
-If you are able to contibute or improve this project, please fork the repository and create a pull request. I'll really apreciate any enhancement or suggestion. Don't forget to give the project a star! Thanks again!
-
-### Steps to create a pull request
-
-1. Fork the Project
-2. Change to the "develop" Branch (`git checkout develop`)
-3. Create your Feature Branch (`git checkout -b feature/NewFeature`)
-4. Commit your Changes (`git commit -m 'Add some NewFeature'`)
-5. Push to the Branch (`git push origin feature/NewFeature`)
-6. Open a Pull Request
-
-Do not take the dashboards much less upload or merge them to other repositories as if the original idea were yours, nor do you share it on social media without mentioning the author. Please, **respect the ingenuity and work of others**. Enjoy!
-
-## Donations
-
-|     |     |
-| --- | --- |
-| If you like my work and want to support me, buying me a coffee would be greatly appreciated! Your support helps me to keep creating and improving these dashboards. Thank you! | [![Paypal Donate](https://img.shields.io/badge/Donate-PayPal-ff69b4.svg)](https://www.paypal.com/donate/?business=MAWY99TACEXSU&no_recurring=0&currency_code=EUR) |
-| Other way to support me is to use [my referral link](https://ts.la/juancarlos32618) to purchase a Tesla product and get Credits you can redeem for exclusive awards like Supercharging miles, merchandise, and accessories. | [![Tesla referral link](./screenshots/help/tesla.png)](https://ts.la/juancarlos32618) |
-|     |     |
-
-## Credits
-
-- Author: [Juan Carlos Heredia](https://infoinnova.net/contacto/)
-- Based on/forked from [Adrian Kumpf](https://github.com/adriankumpf/teslamate) original code, with improvement of custom Grafana Dashboards (see [contributions history](https://github.com/jheredianet/Teslamate-CustomGrafanaDashboards/graphs/contributors)).
-
-## License
-
-Licensed under the [MIT license][license-url].
-
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/jheredianet/Teslamate-CustomGrafanaDashboards.svg?style=for-the-badge
-[contributors-url]: https://github.com/jheredianet/Teslamate-CustomGrafanaDashboards/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/jheredianet/Teslamate-CustomGrafanaDashboards.svg?style=for-the-badge
-[forks-url]: https://github.com/jheredianet/Teslamate-CustomGrafanaDashboards/network/members
-[stars-shield]: https://img.shields.io/github/stars/jheredianet/Teslamate-CustomGrafanaDashboards.svg?style=for-the-badge
-[stars-url]: https://github.com/jheredianet/Teslamate-CustomGrafanaDashboards/stargazers
-[issues-shield]: https://img.shields.io/github/issues/jheredianet/Teslamate-CustomGrafanaDashboards.svg?style=for-the-badge
-[issues-url]: https://github.com/jheredianet/Teslamate-CustomGrafanaDashboards/issues
-[discussions-shield]: https://img.shields.io/github/discussions/jheredianet/Teslamate-CustomGrafanaDashboards.svg?style=for-the-badge
-[discussions-url]: https://github.com/jheredianet/Teslamate-CustomGrafanaDashboards/discussions
-[license-shield]: https://img.shields.io/github/license/jheredianet/Teslamate-CustomGrafanaDashboards.svg?style=for-the-badge
-[license-url]: ./LICENSE
+[MIT](./LICENSE)，与原项目相同。

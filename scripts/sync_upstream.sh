@@ -10,6 +10,8 @@ cd "$(dirname "$0")/.."
 
 UPSTREAM=https://github.com/jheredianet/Teslamate-CustomGrafanaDashboards.git
 git remote get-url upstream >/dev/null 2>&1 || git remote add upstream "$UPSTREAM"
+# README.md is our own; keep it when upstream changes theirs (see .gitattributes)
+git config merge.ours.driver true
 git fetch upstream main
 git merge --no-edit upstream/main
 
