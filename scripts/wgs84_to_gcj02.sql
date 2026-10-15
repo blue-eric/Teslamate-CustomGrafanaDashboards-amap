@@ -9,8 +9,8 @@
 -- functions from hipudding's proc.sql (https://github.com/hipudding/teslamate,
 -- branches *.amap), so hipudding/grafana can still take over later.
 --
--- It stops without changing anything if a different wgs84_to_gcj02 exists, for
--- example the one installed by wemate (see README: "曾经安装过 wemate").
+-- It stops without changing anything if a different wgs84_to_gcj02 exists that
+-- it does not recognise, or that other database functions depend on.
 \set ON_ERROR_STOP on
 BEGIN;
 
@@ -32,11 +32,18 @@ BEGIN
 
     IF fn IS NULL OR args = 'wgslat double precision, wgslon double precision' THEN
         RETURN;  -- missing, or hipudding's: (re)create below
-    ELSIF src LIKE '%v20251120_high_precision%' THEN
-        RAISE EXCEPTION 'wgs84_to_gcj02 was installed by wemate and a wemate trigger still uses it; '
-            'remove wemate''s leftovers first (README: 曾经安装过 wemate). Nothing was changed.';
-    ELSIF args IN ('lat double precision, lon double precision, OUT gcjlat double precision, OUT gcjlon double precision',
-                   'wgs_lon double precision, wgs_lat double precision, OUT gcj_lon double precision, OUT gcj_lat double precision') THEN
+    END IF;
+
+    -- another program's function calls it (e.g. a trigger): replacing it would break that program
+    SELECT string_agg(p.proname, ', ') INTO src
+    FROM pg_proc p
+    WHERE p.oid <> fn AND p.prosrc ILIKE '%wgs84_to_gcj02%';
+    IF src IS NOT NULL THEN
+        RAISE EXCEPTION 'wgs84_to_gcj02(%) is used by other functions (%); nothing was changed', args, src;
+    END IF;
+
+    IF args IN ('lat double precision, lon double precision, OUT gcjlat double precision, OUT gcjlon double precision',
+                'wgs_lon double precision, wgs_lat double precision, OUT gcj_lon double precision, OUT gcj_lat double precision') THEN
         RAISE NOTICE 'Replacing wgs84_to_gcj02 created by an earlier version of this script';
         DROP FUNCTION wgs84_to_gcj02(double precision, double precision);
     ELSE
