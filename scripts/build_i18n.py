@@ -306,7 +306,14 @@ def translate_panel(panel, t, sources=()):
                 prop["value"] = t.optional(prop.get("value"))
     if "unit" in defaults:
         defaults["unit"] = t.optional(defaults["unit"])
+    panel_text = json.dumps(panel, ensure_ascii=False)
     for transformation in panel.get("transformations") or []:
+        alias = (transformation.get("options") or {}).get("alias")
+        # A readable calculated field name that nothing else refers to.
+        if (transformation.get("id") == "calculateField" and isinstance(alias, str)
+                and re.search(r"[A-Z\s]", VAR_RE.sub("", alias))
+                and panel_text.count(json.dumps(alias, ensure_ascii=False)) == 1):
+            transformation["options"]["alias"] = t(alias)
         if transformation.get("id") == "organize":
             names = (transformation.get("options") or {}).get("renameByName") or {}
             for key, value in names.items():

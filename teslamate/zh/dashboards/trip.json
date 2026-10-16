@@ -1249,7 +1249,7 @@
         {
           "id": "calculateField",
           "options": {
-            "alias": "Ø Cost per 100 $length_unit",
+            "alias": "Ø 每 100 $length_unit 费用",
             "binary": {
               "left": {
                 "matcher": {
