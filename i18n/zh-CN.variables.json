@@ -1,0 +1,22 @@
+{
+  "_comment": "Per dashboard file: variables whose choices (query, \"text : value\") or default differ in the Chinese dashboards. Values used by the SQL must stay the same.",
+  "UsageStats.json": {
+    "currency": {
+      "query": "人民币 : CNY, 欧元 : EUR, 美元 : USD, 英镑 : GBP, 瑞士法郎 : CHF",
+      "default": "CNY"
+    },
+    "fuel_units": {
+      "query": "升/百公里 : l100, MPG（美制） : mpg_us, MPG（英制） : mpg_uk",
+      "default": "l100"
+    },
+    "fuel_price": {
+      "default": "7.5"
+    },
+    "ice_consumption": {
+      "default": "7"
+    },
+    "default_kwh_price": {
+      "default": "0.6"
+    }
+  }
+}

@@ -281,7 +281,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "alias": "",
@@ -450,7 +450,7 @@
         },
         "showHeader": true
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -551,7 +551,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -653,7 +653,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -755,7 +755,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -856,7 +856,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -958,7 +958,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -1031,7 +1031,7 @@
         "content": "#### 按运营商统计直流充电曲线\n\n要用这个仪表板分析数据，需要先为充过电的充电运营商添加名称相关的地理围栏，或者定期修改 **addresses** 表中的 **name** 字段，让它包含运营商名称。\n\n例如，如果 **Teslamate** 把地址名称识别为 *\"Esso Purley Way\"*，你可以把它改成 *\"Esso Purley Way - IONITY\"* 或 *\"IONITY Esso Purley Way\"*，然后在上方文本框中输入 **IONITY** 进行筛选，就能显示在该运营商所有充电记录的充电曲线。",
         "mode": "markdown"
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "title": "",
       "type": "text"
     }

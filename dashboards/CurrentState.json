@@ -106,7 +106,7 @@
         "textMode": "value",
         "wideLayout": true
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -197,7 +197,7 @@
         "textMode": "value",
         "wideLayout": true
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -323,7 +323,7 @@
         "textMode": "value",
         "wideLayout": true
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -447,7 +447,7 @@
         "textMode": "value",
         "wideLayout": true
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -548,7 +548,7 @@
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -579,7 +579,7 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "fe4twmpt3sem8c"
+            "uid": "TeslaMate"
           },
           "editorMode": "code",
           "format": "table",
@@ -711,7 +711,7 @@
         "textMode": "value_and_name",
         "wideLayout": true
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -863,7 +863,7 @@
           "zoom": 15
         }
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "alias": "",
@@ -1009,7 +1009,7 @@
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -1096,7 +1096,7 @@
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -1183,7 +1183,7 @@
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -1271,7 +1271,7 @@
         "textMode": "value",
         "wideLayout": true
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -1457,7 +1457,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -1597,7 +1597,7 @@
         "textMode": "value",
         "wideLayout": true
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -1704,7 +1704,7 @@
         "textMode": "value",
         "wideLayout": true
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -1854,7 +1854,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {

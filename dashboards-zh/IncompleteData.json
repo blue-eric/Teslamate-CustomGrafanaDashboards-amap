@@ -104,7 +104,7 @@
         },
         "showHeader": false
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "alias": "",
@@ -181,7 +181,7 @@
         "content": "#### 不完整数据\n\n在这里可以检查 **行程** 和 **充电** 是否存在不完整的数据。如果有，可以参考官方指南 <a href='https://docs.teslamate.org/docs/maintenance/manually_fixing_data' target='_blank'>手动修复数据</a> 进行处理。",
         "mode": "markdown"
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "title": "",
       "type": "text"
     },
@@ -250,7 +250,7 @@
         },
         "showHeader": true
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "alias": "",
@@ -353,7 +353,7 @@
         },
         "showHeader": true
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "alias": "",
@@ -437,7 +437,7 @@
         },
         "datasource": {
           "type": "grafana-postgresql-datasource",
-          "uid": "fe4twmpt3sem8c"
+          "uid": "TeslaMate"
         },
         "definition": "select unit_of_length from settings limit 1;",
         "hide": 2,
@@ -456,7 +456,7 @@
         },
         "datasource": {
           "type": "grafana-postgresql-datasource",
-          "uid": "fe4twmpt3sem8c"
+          "uid": "TeslaMate"
         },
         "definition": "select preferred_range from settings limit 1;",
         "hide": 2,

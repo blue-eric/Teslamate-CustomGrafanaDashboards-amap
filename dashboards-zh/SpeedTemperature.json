@@ -213,7 +213,7 @@
           }
         ]
       },
-      "pluginVersion": "12.4.0",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -417,7 +417,7 @@
           }
         ]
       },
-      "pluginVersion": "12.4.0",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -612,7 +612,7 @@
           }
         ]
       },
-      "pluginVersion": "12.4.0",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -819,7 +819,7 @@
         "xTickLabelRotation": -45,
         "xTickLabelSpacing": 0
       },
-      "pluginVersion": "12.4.0",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -1053,7 +1053,7 @@
         "xTickLabelRotation": -45,
         "xTickLabelSpacing": 0
       },
-      "pluginVersion": "12.4.0",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -1298,7 +1298,7 @@
         "xTickLabelRotation": -45,
         "xTickLabelSpacing": 0
       },
-      "pluginVersion": "12.4.0",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -1516,7 +1516,7 @@
         "xTickLabelRotation": -45,
         "xTickLabelSpacing": 0
       },
-      "pluginVersion": "12.4.0",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -1775,7 +1775,7 @@
           }
         ]
       },
-      "pluginVersion": "12.4.0",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -1981,7 +1981,7 @@
         "xTickLabelRotation": -45,
         "xTickLabelSpacing": 0
       },
-      "pluginVersion": "12.4.0",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -2129,7 +2129,7 @@
         "xTickLabelRotation": -45,
         "xTickLabelSpacing": 0
       },
-      "pluginVersion": "12.4.0",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -2336,7 +2336,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.4.0",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -2598,7 +2598,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.4.0",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -2789,10 +2789,7 @@
         "type": "query"
       },
       {
-        "current": {
-          "text": "https://teslamate.infoinnova.net",
-          "value": "https://teslamate.infoinnova.net"
-        },
+        "current": {},
         "datasource": {
           "type": "grafana-postgresql-datasource",
           "uid": "TeslaMate"

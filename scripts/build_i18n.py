@@ -10,6 +10,8 @@ Column names returned by the SQL are translated with display-name overrides,
 so queries and field references keep working. The only SQL changes are the
 display-only snippets listed by hand in i18n/<lang>.sql.json (for example the
 text 'Other' or the to_char() month format); --update never adds to that file.
+Dashboard variables can get other choices or defaults for the language (for
+example the currency) in i18n/<lang>.variables.json.
 Column names that look like identifiers ("speed") are only translated when
 they are added to the table by hand.
 
@@ -44,6 +46,7 @@ LANGS = {
         "table": os.path.join(ROOT, "i18n", "zh-CN.json"),
         "sql_table": os.path.join(ROOT, "i18n", "zh-CN.sql.json"),
         "values_table": os.path.join(ROOT, "i18n", "zh-CN.values.json"),
+        "variables_table": os.path.join(ROOT, "i18n", "zh-CN.variables.json"),
         "out": os.path.join(ROOT, "dashboards-zh"),
         "uid_suffix": "-zh",
         "tag": "TeslamateCustomDashboardsZh",
@@ -372,6 +375,37 @@ def translate_variable(variable, t):
         current["text"] = texts[current["value"]]
 
 
+def override_variables(dashboard, overrides, problems):
+    """Replace the choices ("query") and/or the default of the listed variables."""
+    variables = {v.get("name"): v for v in (dashboard.get("templating") or {}).get("list") or []}
+    for name, override in overrides.items():
+        variable = variables.get(name)
+        if variable is None:
+            problems.append(f"variable no longer found: {dashboard.get('uid')} ${name}")
+            continue
+        if "query" in override:
+            variable["query"] = override["query"]
+        if variable.get("type") == "custom":
+            options = []
+            for item in re.split(r"(?<!\\),", variable.get("query", "")):
+                item = item.strip()
+                if item:
+                    text, value = (part.strip() for part in item.split(" : ", 1)) if " : " in item else (item, item)
+                    options.append({"selected": False, "text": text, "value": value})
+        else:  # textbox and similar: the query is the default value
+            if "default" in override:
+                variable["query"] = override["default"]
+            options = [{"selected": False, "text": variable.get("query", ""), "value": variable.get("query", "")}]
+        default = override.get("default", (variable.get("current") or {}).get("value"))
+        selected = next((o for o in options if o["value"] == default), None)
+        if selected is None:
+            problems.append(f"default {default!r} is not a choice of {dashboard.get('uid')} ${name}")
+            selected = options[0]
+        selected["selected"] = True
+        variable["options"] = options
+        variable["current"] = {"text": selected["text"], "value": selected["value"]}
+
+
 def translate_dashboard(dashboard, t, lang, custom_uids):
     for key in ("title", "description"):
         if key in dashboard:
@@ -430,6 +464,10 @@ def main():
         with open(lang["values_table"], encoding="utf-8") as f:
             values_table = json.load(f)
     t = Translator(table, sql_table, values_table)
+    variables_table = {}
+    if os.path.exists(lang.get("variables_table", "")):
+        with open(lang["variables_table"], encoding="utf-8") as f:
+            variables_table = json.load(f)
 
     sources = sorted(glob.glob(os.path.join(SRC_DIR, "*.json")))
     dashboards = {}
@@ -442,10 +480,14 @@ def main():
     for name, dashboard in dashboards.items():
         translated = copy.deepcopy(dashboard)
         translate_dashboard(translated, t, lang, custom_uids)
+        override_variables(translated, variables_table.get(name) or {}, t.problems)
         outputs[name] = dump(translated)
 
     missing = [text for text in t.seen if not table.get(text)]
     unused = [text for text in table if text not in t.seen]
+    for name in variables_table:
+        if not name.startswith("_") and name not in dashboards:
+            t.problems.append(f"dashboard no longer found: {name} (i18n/{args.lang}.variables.json)")
     for old in list(sql_table) + list(values_table):
         if not old.startswith("_") and old not in t.sql_used:
             t.problems.append(f"SQL snippet no longer found in any dashboard: {old!r}")

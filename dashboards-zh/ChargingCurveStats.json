@@ -326,7 +326,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "alias": "",
@@ -671,7 +671,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "alias": "",
@@ -843,7 +843,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -992,7 +992,7 @@
         "xTickLabelRotation": 0,
         "xTickLabelSpacing": 0
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {

@@ -302,7 +302,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "alias": "",
@@ -550,7 +550,7 @@
           "zoom": 15
         }
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "alias": "",
@@ -716,7 +716,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -839,7 +839,7 @@
         "textMode": "value",
         "wideLayout": true
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "alias": "kWh Added",
@@ -978,7 +978,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -1147,7 +1147,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -1348,7 +1348,7 @@
         "textMode": "value",
         "wideLayout": true
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "alias": "Elapsed Time",
@@ -1509,7 +1509,7 @@
         "textMode": "value",
         "wideLayout": true
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -1650,7 +1650,7 @@
         "textMode": "value",
         "wideLayout": true
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -1791,7 +1791,7 @@
         "textMode": "value",
         "wideLayout": true
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -1929,7 +1929,7 @@
         "textMode": "value",
         "wideLayout": true
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -2067,7 +2067,7 @@
         "text": {},
         "valueMode": "color"
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
@@ -2194,7 +2194,7 @@
         "text": {},
         "valueMode": "color"
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "13.2.2",
       "targets": [
         {
           "datasource": {
