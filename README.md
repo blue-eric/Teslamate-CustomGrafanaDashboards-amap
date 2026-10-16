@@ -1,16 +1,23 @@
 # TeslaMate 自定义仪表板（高德地图 + 中文版）
 
-为国内 TeslaMate 用户准备的一套 Grafana 自定义仪表板：
+为国内 TeslaMate 用户准备的一套 Grafana 仪表板，配合 TeslaMate 官方的 `teslamate/grafana` 镜像使用：
 
+- **TeslaMate 自带仪表板也换成高德 + 中文**：行程、去过的地方、行程详情等 24 个官方仪表板改为高德地图并汉化，直接替换镜像里的英文版，不再需要第三方 Grafana 镜像。
 - **高德地图**：地图面板使用高德底图，轨迹自动从 WGS-84 转换为 GCJ-02（火星坐标），不再偏移。
 - **中文界面**：标题、表头、图例、筛选项、提示文字等全部汉化，车辆状态等数据值也显示为中文。
 - **适配国内使用习惯**：
   - 充电曲线统计能识别中文命名的超充站（如"特斯拉超级充电站""超充"）；
   - 充电费用统计可把多个地理围栏合并为"家""公司"统计（名称含 家/住、公司/单位/办公 等）；
   - 修复了"当前状态"中预估续航显示 N/A 的问题。
-- **持续跟进原作者更新**：原作者新增或修改仪表板后，本仓库会同步并补上中文翻译。
+- **持续跟进上游更新**：原作者或 TeslaMate 新增、修改仪表板后，本仓库会同步并补上中文翻译。
 
 ## 仪表板一览
+
+### TeslaMate 自带仪表板（`teslamate/`）
+
+TeslaMate 官方的全部仪表板（概览、行驶记录、充电记录、电池健康、待机耗电、统计、时间线、温度等），当前对应 TeslaMate **v4.3.0**（见 `teslamate/VERSION`）。其中 5 个地图面板改为高德地图：行程、去过的地方、充电统计（充电热力地图）、行程详情、充电详情。uid 与官方相同，TeslaMate 网页和其他仪表板中的链接都照常可用。
+
+### 自定义仪表板
 
 | 仪表板 | 说明 |
 | --- | --- |
@@ -42,22 +49,29 @@
 git clone https://github.com/blue-eric/Teslamate-CustomGrafanaDashboards-amap.git
 ```
 
-### 2. 挂载到 Grafana
+### 2. 修改 Grafana 配置
 
-编辑 TeslaMate 的 `docker-compose.yml`，在 grafana 服务的 `volumes` 末尾加上两行：
+编辑 TeslaMate 的 `docker-compose.yml`，grafana 服务使用官方镜像，并在 `volumes` 中加上下面几行：
 
 ```yaml
 services:
   grafana:
+    image: teslamate/grafana:4.3.0   # 建议固定版本，与本仓库 teslamate/VERSION 一致
     ...
     volumes:
       - teslamate-grafana-data:/var/lib/grafana
+      # TeslaMate 自带仪表板：高德地图 + 中文，替换镜像里的英文版
+      - ~/Teslamate-CustomGrafanaDashboards-amap/teslamate/zh/dashboards:/dashboards
+      - ~/Teslamate-CustomGrafanaDashboards-amap/teslamate/zh/dashboards_internal:/dashboards_internal
+      - ~/Teslamate-CustomGrafanaDashboards-amap/teslamate/zh/dashboards_reports:/dashboards_reports
+      # 自定义仪表板（中文版）
       - ~/Teslamate-CustomGrafanaDashboards-amap/customdashboards-zh.yml:/etc/grafana/provisioning/dashboards/customdashboards-zh.yml
       - ~/Teslamate-CustomGrafanaDashboards-amap/dashboards-zh:/TeslamateCustomDashboardsZh
 ```
 
 - 群晖等 NAS、或运行 Docker 的用户不是当前用户时，请把 `~/` 换成**完整路径**，例如 `/volume1/docker/Teslamate-CustomGrafanaDashboards-amap/...`。
-- 如果还想要英文版（同样是高德地图），再加两行；中英文版使用不同的文件夹和 uid，可以同时安装：
+- TeslaMate 自带仪表板想保留英文、只换高德地图：把三行中的 `teslamate/zh/` 换成 `teslamate/en/`。
+- 自定义仪表板还想要英文版（同样是高德地图），再加两行；中英文版使用不同的文件夹和 uid，可以同时安装：
 
 ```yaml
       - ~/Teslamate-CustomGrafanaDashboards-amap/customdashboards.yml:/etc/grafana/provisioning/dashboards/customdashboards.yml
@@ -66,16 +80,15 @@ services:
 
 ### 3. 准备坐标转换函数
 
-地图面板需要 TeslaMate 数据库里有 `wgs84_to_gcj02` 函数：
-
-- **Grafana 使用 [`hipudding/grafana`](https://hub.docker.com/r/hipudding/grafana) 镜像**（推荐，TeslaMate 自带仪表板也是高德地图）：镜像每次启动都会自动创建该函数，跳过这一步。
-- **Grafana 使用官方 `teslamate/grafana` 等其他镜像**：执行一次下面的命令（数据库服务名、用户名、库名请按实际修改）：
+地图面板需要 TeslaMate 数据库里有 `wgs84_to_gcj02` 函数。执行一次下面的命令即可，函数会一直保存在数据库中（数据库服务名、用户名、库名请按实际修改）：
 
 ```bash
 docker compose exec -T database psql -U teslamate -d teslamate < ~/Teslamate-CustomGrafanaDashboards-amap/scripts/wgs84_to_gcj02.sql
 ```
 
-该脚本创建的函数与 `hipudding/grafana` 镜像中的完全相同，以后更换镜像也不会冲突，重复执行没有影响。如果数据库里已有一个写法不同、或正被其他程序使用的同名函数，脚本会中止且不做任何修改。
+- 重复执行没有影响。如果数据库里已有一个写法不同、或正被其他程序使用的同名函数，脚本会中止且不做任何修改。
+- 该函数与 [`hipudding/grafana`](https://hub.docker.com/r/hipudding/grafana) 镜像创建的完全相同。之前用过该镜像的，数据库里已经有这个函数，可以跳过这一步。
+- 从不含该函数的备份恢复数据库后，需要再执行一次。
 
 ### 4. 启动
 
@@ -83,7 +96,7 @@ docker compose exec -T database psql -U teslamate -d teslamate < ~/Teslamate-Cus
 docker compose up -d
 ```
 
-打开 Grafana，在"仪表板"中会出现 **TeslaMate 自定义仪表板** 文件夹。进入任意一个仪表板后，右上角的下拉按钮可以在各仪表板之间切换。
+打开 Grafana，"TeslaMate" 文件夹中是高德 + 中文版的官方仪表板，"TeslaMate 自定义仪表板" 文件夹中是自定义仪表板。进入任意一个仪表板后，右上角的下拉按钮可以在各仪表板之间切换。
 
 ## 更新
 
@@ -91,6 +104,8 @@ docker compose up -d
 git -C ~/Teslamate-CustomGrafanaDashboards-amap pull
 docker compose restart grafana
 ```
+
+升级 TeslaMate 时，先确认本仓库 `teslamate/VERSION` 已更新到新版本，再把 compose 中 `teslamate/teslamate` 和 `teslamate/grafana` 的版本号一起改为该版本。挂载的仪表板与镜像版本不一致时，新版本的仪表板改动不会生效，个别面板可能显示异常。
 
 ## 常见问题
 
@@ -110,6 +125,15 @@ docker compose restart grafana
 | `i18n/zh-CN.sql.json` | SQL 里只用于显示的文字片段（如 `'Other'`、月份格式 `'YYYY Month'`），按原样替换 | 手动维护，只放不参与比较和关联的显示文字 |
 | `i18n/zh-CN.values.json` | 数据库原始值的显示文字（如车辆状态 online / asleep） | 手动维护 |
 | `i18n/zh-CN.variables.json` | 中文版仪表板中取值或默认值不同的变量（如用车统计的货币默认人民币、油价默认 7.5） | 手动维护，SQL 使用的取值必须保持不变 |
+
+同步 TeslaMate 的更新（`teslamate/source/` 是官方仪表板原文件，`teslamate/en/`、`teslamate/zh/` 由脚本生成，不要直接修改）：
+
+```bash
+bash scripts/sync_teslamate.sh            # 最新版本；也可指定版本，如 v4.3.0
+# 然后同样填写 i18n/zh-CN.json 中值为 "" 的条目，重新生成、检查并提交
+```
+
+地图面板由 `scripts/teslamate_amap.py` 自动转换：查询原样保留，只在外面包一层坐标转换，所以官方修改了这些查询也无需手动处理。
 
 同步原作者的更新：
 

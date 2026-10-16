@@ -397,6 +397,102 @@
                 }
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "samples"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "样本数"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "consumption"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "能耗"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "speed"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "车速"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "temperature"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "温度"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "range"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "续航"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "distance_percentage"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "距离占比"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "at_temperature_percentage"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "该温度占比"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "at_speed_percentage"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "该车速占比"
+              }
+            ]
           }
         ]
       },
@@ -592,6 +688,102 @@
                 }
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "samples"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "样本数"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "consumption"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "能耗"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "speed"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "车速"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "temperature"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "温度"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "range"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "续航"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "distance_percentage"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "距离占比"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "at_temperature_percentage"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "该温度占比"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "at_speed_percentage"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "该车速占比"
+              }
+            ]
           }
         ]
       },
@@ -779,6 +971,90 @@
               {
                 "id": "displayName",
                 "value": "能耗 Wh/$length_unit"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "samples"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "样本数"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "consumption"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "能耗"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "speed"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "车速"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "range"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "续航"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "distance_percentage"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "距离占比"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "at_temperature_percentage"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "该温度占比"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "at_speed_percentage"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "该车速占比"
               }
             ]
           }
@@ -1014,6 +1290,90 @@
               {
                 "id": "displayName",
                 "value": "能耗 Wh/$length_unit"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "samples"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "样本数"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "consumption"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "能耗"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "temperature"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "温度"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "range"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "续航"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "distance_percentage"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "距离占比"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "at_temperature_percentage"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "该温度占比"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "at_speed_percentage"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "该车速占比"
               }
             ]
           }
@@ -1260,6 +1620,90 @@
                 "value": "温度 º$temp_unitº"
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "samples"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "样本数"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "consumption"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "能耗"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "speed"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "车速"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "range"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "续航"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "distance_percentage"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "距离占比"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "at_temperature_percentage"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "该温度占比"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "at_speed_percentage"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "该车速占比"
+              }
+            ]
           }
         ]
       },
@@ -1476,6 +1920,90 @@
               {
                 "id": "displayName",
                 "value": "温度 º$temp_unitº"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "samples"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "样本数"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "consumption"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "能耗"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "speed"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "车速"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "range"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "续航"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "distance_percentage"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "距离占比"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "at_temperature_percentage"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "该温度占比"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "at_speed_percentage"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "该车速占比"
               }
             ]
           }
@@ -1755,6 +2283,102 @@
                 "value": "none"
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "samples"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "样本数"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "consumption"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "能耗"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "speed"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "车速"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "temperature"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "温度"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "range"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "续航"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "distance_percentage"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "距离占比"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "at_temperature_percentage"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "该温度占比"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "at_speed_percentage"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "该车速占比"
+              }
+            ]
           }
         ]
       },
@@ -1943,6 +2567,90 @@
                 "value": 0
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "samples"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "样本数"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "consumption"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "能耗"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "speed"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "车速"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "range"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "续航"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "distance_percentage"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "距离占比"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "at_temperature_percentage"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "该温度占比"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "at_speed_percentage"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "该车速占比"
+              }
+            ]
           }
         ]
       },
@@ -2089,6 +2797,90 @@
               {
                 "id": "displayName",
                 "value": "距离"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "samples"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "样本数"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "consumption"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "能耗"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "temperature"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "温度"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "range"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "续航"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "distance_percentage"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "距离占比"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "at_temperature_percentage"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "该温度占比"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "at_speed_percentage"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "该车速占比"
               }
             ]
           }

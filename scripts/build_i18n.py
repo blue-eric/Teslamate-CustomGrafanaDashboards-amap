@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 """Generate translated copies of the dashboards from a translation table.
 
-The English dashboards in dashboards/ stay the single source of truth (they are
-kept in sync with the upstream project). This script reads them, replaces the
-user-visible texts using i18n/<lang>.json and writes the result to
-dashboards-<lang>/.
+The English dashboards stay the single source of truth: dashboards/ (kept in
+sync with the upstream project) and teslamate/source/ (TeslaMate's own
+dashboards, see scripts/sync_teslamate.sh). This script reads them, replaces
+the user-visible texts using i18n/<lang>.json and writes the result to
+dashboards-<lang>/ and teslamate/<code>/. TeslaMate's dashboards also get
+their maps switched to AMap (scripts/teslamate_amap.py), in English as well
+(teslamate/en/).
 
 Column names returned by the SQL are translated with display-name overrides,
 so queries and field references keep working. The only SQL changes are the
@@ -37,10 +40,31 @@ import os
 import re
 import sys
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SRC_DIR = os.path.join(ROOT, "dashboards")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import teslamate_amap  # noqa: E402
 
-# Per language: translation table, output folder, uid suffix and folder tag.
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TESLAMATE = os.path.join(ROOT, "teslamate")
+
+# Dashboard sets built from the same translation tables:
+# - this repository's custom dashboards: own uids (suffix) and folder tag, so
+#   both languages can be installed side by side;
+# - TeslaMate's own dashboards (teslamate/source, see scripts/sync_teslamate.sh):
+#   maps switched to AMap and the uids kept, so they replace the dashboards of
+#   the teslamate/grafana image and every link to them keeps working. The
+#   English AMap version is written to teslamate/en as well.
+SETS = [
+    {"src": os.path.join(ROOT, "dashboards"), "out": "{out}", "uid_suffix": True, "retag": True},
+    {"src": os.path.join(TESLAMATE, "source"), "out": os.path.join(TESLAMATE, "{code}", "dashboards"),
+     "amap": True, "en": os.path.join(TESLAMATE, "en", "dashboards")},
+    {"src": os.path.join(TESLAMATE, "source", "internal"), "out": os.path.join(TESLAMATE, "{code}", "dashboards_internal"),
+     "amap": True, "en": os.path.join(TESLAMATE, "en", "dashboards_internal")},
+    {"src": os.path.join(TESLAMATE, "source", "reports"), "out": os.path.join(TESLAMATE, "{code}", "dashboards_reports"),
+     "amap": True, "en": os.path.join(TESLAMATE, "en", "dashboards_reports")},
+]
+
+# Per language: translation tables, output folder of the custom dashboards,
+# their uid suffix and folder tag, and the folder name under teslamate/.
 LANGS = {
     "zh-CN": {
         "table": os.path.join(ROOT, "i18n", "zh-CN.json"),
@@ -48,6 +72,7 @@ LANGS = {
         "values_table": os.path.join(ROOT, "i18n", "zh-CN.values.json"),
         "variables_table": os.path.join(ROOT, "i18n", "zh-CN.variables.json"),
         "out": os.path.join(ROOT, "dashboards-zh"),
+        "code": "zh",
         "uid_suffix": "-zh",
         "tag": "TeslamateCustomDashboardsZh",
     },
@@ -214,7 +239,8 @@ def name_matcher(name):
     return {"id": "byRegexp", "options": "/^" + ".+".join(re.escape(part) for part in parts) + "$/"}
 
 
-def translate_panel(panel, t):
+def translate_panel(panel, t, sources=()):
+    """sources: panels whose query results this panel reuses (-- Dashboard -- datasource)."""
     for key in ("title", "description"):
         if key in panel:
             panel[key] = t(panel[key])
@@ -232,8 +258,10 @@ def translate_panel(panel, t):
     # matchers, table sorting), so they are renamed together. A name that is
     # also a column name in the panel's SQL might be matched as a raw column
     # name and is left as is.
-    sql = panel_sql(panel).lower()
+    sql = "\n".join([panel_sql(panel)] + [panel_sql(source) for source in sources]).lower()
     aliases = sql_aliases(panel)
+    for source in sources:
+        aliases += [name for name in sql_aliases(source) if name not in aliases]
     renamed = {}
 
     # Raw database values shown as text (i18n/<lang>.values.json).
@@ -322,15 +350,45 @@ def translate_panel(panel, t):
     # renamed along with the column, a column used in any other regex keeps
     # its original name.
     selectors = [value for value in iter_strings(options) if value.startswith("/")]
+
+    def new_name(name):
+        readable = re.search(r"[A-Z\s\[\(%#]", VAR_RE.sub("", name))
+        return t(name) if readable and translatable(name) else t.optional(name)
+
+    def regex_matches(selector, name):
+        body = re.sub(r"^/|/[a-z]*$", "", selector)
+        try:
+            return re.search(body, VAR_RE.sub("x", name)) is not None
+        except re.error:
+            return True  # unknown pattern: assume it matches, keep the name
+
+    # A regex selector such as "/Inside/" may select several columns. A column
+    # whose new name the selector no longer matches is renamed only if the
+    # selector can be translated with it (a plain word in the table whose
+    # translation is part of the new name); otherwise it keeps its name.
+    candidates = [name for name in aliases
+                  if name not in handled and not any(re.search(pattern, VAR_RE.sub("x", name)) for pattern in regexes)]
+    selector_new = {}
+    blocked = set()
+    for selector in selectors:
+        lost = [name for name in candidates if selector != f"/^{name}$/" and regex_matches(selector, name)
+                and new_name(name) != name and not regex_matches(selector, new_name(name))]
+        if not lost:
+            continue
+        word = re.fullmatch(r"/([A-Za-z][A-Za-z ]*)/", selector)
+        word_new = t.optional(word.group(1)) if word else None
+        if word and word_new != word.group(1) and all(word_new in new_name(name) for name in lost):
+            selector_new[selector] = "/" + re.escape(word_new) + "/"
+        else:
+            blocked.update(lost)
     added = []
-    for name in aliases:
-        if name in handled or any(re.search(pattern, VAR_RE.sub("x", name)) for pattern in regexes):
+    for name in candidates:
+        if name in blocked:
             continue
         plain_selector = f"/^{name}$/"
-        if any(name in selector and selector != plain_selector for selector in selectors):
+        if any(name in selector and selector != plain_selector and selector not in selector_new for selector in selectors):
             continue
-        readable = re.search(r"[A-Z\s\[\(%#]", VAR_RE.sub("", name))
-        new = t(name) if readable and translatable(name) else t.optional(name)
+        new = new_name(name)
         if new == name:
             continue
         added.append({"matcher": name_matcher(name), "properties": [{"id": "displayName", "value": new}]})
@@ -338,6 +396,9 @@ def translate_panel(panel, t):
         for sort in options.get("sortBy") or []:
             if sort.get("displayName") == name:
                 sort["displayName"] = new
+    if added:
+        for old_selector, new_selector in selector_new.items():
+            replace_strings(options, old_selector, new_selector)
     if added:
         field_config.setdefault("overrides", []).extend(added)
         panel["fieldConfig"] = field_config
@@ -411,11 +472,26 @@ def translate_dashboard(dashboard, t, lang, custom_uids):
         if key in dashboard:
             dashboard[key] = t(dashboard[key])
     translate_links(dashboard.get("links"), t)
-    for panel in iter_panels(dashboard.get("panels")):
-        translate_panel(panel, t)
+    for annotation in (dashboard.get("annotations") or {}).get("list") or []:
+        if annotation.get("builtIn"):
+            continue
+        if "name" in annotation:
+            annotation["name"] = t(annotation["name"])
+        for holder in (annotation, annotation.get("target") or {}):
+            for key in ("rawQuery", "rawSql"):
+                if isinstance(holder.get(key), str):
+                    holder[key], _ = t.sql(holder[key])
+    panels = list(iter_panels(dashboard.get("panels")))
+    originals = {panel.get("id"): copy.deepcopy(panel) for panel in panels}
+    for panel in panels:
+        sources = [originals[target["panelId"]] for target in panel.get("targets") or []
+                   if isinstance(target.get("panelId"), int) and target["panelId"] in originals]
+        translate_panel(panel, t, sources)
     for variable in (dashboard.get("templating") or {}).get("list") or []:
         translate_variable(variable, t)
 
+    if not lang.get("uid_suffix"):
+        return  # TeslaMate's own dashboards keep their uids and tags
     # Own uid, folder tag and links between the custom dashboards, so the
     # translated set can be installed next to the English one.
     dashboard["uid"] = dashboard["uid"] + lang["uid_suffix"]
@@ -469,24 +545,38 @@ def main():
         with open(lang["variables_table"], encoding="utf-8") as f:
             variables_table = json.load(f)
 
-    sources = sorted(glob.glob(os.path.join(SRC_DIR, "*.json")))
-    dashboards = {}
-    for path in sources:
-        with open(path, encoding="utf-8") as f:
-            dashboards[os.path.basename(path)] = json.load(f)
-    custom_uids = [d["uid"] for d in dashboards.values()]
-
+    # output path -> file content, for every set
     outputs = {}
-    for name, dashboard in dashboards.items():
-        translated = copy.deepcopy(dashboard)
-        translate_dashboard(translated, t, lang, custom_uids)
-        override_variables(translated, variables_table.get(name) or {}, t.problems)
-        outputs[name] = dump(translated)
+    out_dirs = []
+    dashboard_names = set()
+    for spec in SETS:
+        if not os.path.isdir(spec["src"]):
+            continue
+        out_dir = spec["out"].format(out=lang["out"], code=lang["code"])
+        out_dirs.append(out_dir)
+        dashboards = {}
+        for path in sorted(glob.glob(os.path.join(spec["src"], "*.json"))):
+            with open(path, encoding="utf-8") as f:
+                dashboards[os.path.basename(path)] = json.load(f)
+        dashboard_names.update(dashboards)
+        custom_uids = [d["uid"] for d in dashboards.values()]
+        set_lang = dict(lang) if spec.get("uid_suffix") else dict(lang, uid_suffix="", tag=None)
+        if spec.get("en"):
+            out_dirs.append(spec["en"])
+        for name, dashboard in dashboards.items():
+            if spec.get("amap"):
+                teslamate_amap.amapify(dashboard, t.problems)
+                if spec.get("en"):
+                    outputs[os.path.join(spec["en"], name)] = dump(dashboard)
+            translated = copy.deepcopy(dashboard)
+            translate_dashboard(translated, t, set_lang, custom_uids)
+            override_variables(translated, variables_table.get(name) or {}, t.problems)
+            outputs[os.path.join(out_dir, name)] = dump(translated)
 
     missing = [text for text in t.seen if not table.get(text)]
     unused = [text for text in table if text not in t.seen]
     for name in variables_table:
-        if not name.startswith("_") and name not in dashboards:
+        if not name.startswith("_") and name not in dashboard_names:
             t.problems.append(f"dashboard no longer found: {name} (i18n/{args.lang}.variables.json)")
     for old in list(sql_table) + list(values_table):
         if not old.startswith("_") and old not in t.sql_used:
@@ -495,18 +585,16 @@ def main():
         print("WARNING:", problem)
 
     if args.check:
-        stale = []
-        for name, content in outputs.items():
-            path = os.path.join(lang["out"], name)
-            if not os.path.exists(path) or open(path, encoding="utf-8").read() != content:
-                stale.append(name)
-        extra = set(os.listdir(lang["out"])) - set(outputs) if os.path.isdir(lang["out"]) else set()
+        stale = [path for path, content in outputs.items()
+                 if not os.path.exists(path) or open(path, encoding="utf-8").read() != content]
+        extra = [os.path.join(d, n) for d in out_dirs if os.path.isdir(d)
+                 for n in os.listdir(d) if n.endswith(".json") and os.path.join(d, n) not in outputs]
         print(f"untranslated: {len(missing)}, unused: {len(unused)}, "
               f"out of date: {len(stale) + len(extra)}, warnings: {len(t.problems)}")
         for text in missing:
             print("  untranslated:", json.dumps(text, ensure_ascii=False)[:120])
-        for name in stale + sorted(extra):
-            print("  out of date:", name)
+        for path in stale + extra:
+            print("  out of date:", os.path.relpath(path, ROOT))
         sys.exit(1 if missing or stale or extra or t.problems else 0)
 
     if args.update or args.prune:
@@ -523,14 +611,15 @@ def main():
         print(f"{lang['table']}: {len(missing)} new text(s) added" if args.update else "",
               f"{len(unused)} unused removed" if args.prune else "")
 
-    os.makedirs(lang["out"], exist_ok=True)
-    for name in os.listdir(lang["out"]):
-        if name.endswith(".json") and name not in outputs:
-            os.remove(os.path.join(lang["out"], name))
-    for name, content in outputs.items():
-        with open(os.path.join(lang["out"], name), "w", encoding="utf-8") as f:
+    for out_dir in out_dirs:
+        os.makedirs(out_dir, exist_ok=True)
+        for name in os.listdir(out_dir):
+            if name.endswith(".json") and os.path.join(out_dir, name) not in outputs:
+                os.remove(os.path.join(out_dir, name))
+    for path, content in outputs.items():
+        with open(path, "w", encoding="utf-8") as f:
             f.write(content)
-    print(f"{len(outputs)} dashboards written to {lang['out']}; "
+    print(f"{len(outputs)} dashboards written; "
           f"{len(t.seen) - len(missing)}/{len(t.seen)} texts translated"
           + (f", {len(missing)} still in English (run with --update, then fill them in)" if missing else ""))
 

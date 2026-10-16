@@ -238,7 +238,20 @@
           },
           "unit": "kwatth"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "total"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "总计"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 3,
@@ -1399,7 +1412,7 @@
               }
             ]
           },
-          "unit": "Km"
+          "unit": "公里"
         },
         "overrides": []
       },

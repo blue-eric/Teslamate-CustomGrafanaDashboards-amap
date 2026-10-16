@@ -2160,7 +2160,20 @@
           },
           "unit": "kwatth"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "total"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "总计"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 2,

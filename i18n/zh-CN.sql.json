@@ -42,5 +42,12 @@
   "ARRAY['Mon','Tue','Wed','Thu','Fri','Sat','Sun']": "ARRAY['周一','周二','周三','周四','周五','周六','周日']",
   "b || ' to ' || (b + 5)": "b || ' ~ ' || (b + 5)",
   "THEN 'Supercharger' ELSE 'DC (other networks)' END": "THEN '特斯拉超充' ELSE '其他直流快充' END",
-  "ELSE 'AC (outside geofences)'": "ELSE '交流慢充（围栏外）'"
+  "ELSE 'AC (outside geofences)'": "ELSE '交流慢充（围栏外）'",
+  "'driving' as metric": "'行驶' as metric",
+  "THEN 'charging (DC)'": "THEN '直流充电'",
+  "ELSE 'charging (AC)'": "ELSE '交流充电'",
+  "'Total Energy consumed (gross)' as metric": "'总耗电' as metric",
+  "THEN 'Total Energy added (DC)'": "THEN '直流充入电量'",
+  "ELSE 'Total Energy added (AC)'": "ELSE '交流充入电量'",
+  "concat('Charged: '": "concat('充入：'"
 }

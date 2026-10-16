@@ -4,5 +4,12 @@
     "online": "在线",
     "offline": "离线",
     "asleep": "休眠"
+  },
+  "'🚗 Driving' AS \"Action\"": {
+    "🚗 Driving": "🚗 行驶",
+    "🔋 Charging": "🔋 充电",
+    "🅿️ Parking": "🅿️ 停车",
+    "❓ Missing": "❓ 缺失",
+    "💾 Updating": "💾 更新"
   }
 }
